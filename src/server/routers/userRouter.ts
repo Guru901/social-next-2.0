@@ -85,6 +85,7 @@ export const userRouter = j.router({
       return c.json({
         success: true,
         data: user,
+        msg: "logged in successfully",
       });
     }
 

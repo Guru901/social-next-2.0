@@ -8,6 +8,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SignUpSchema } from "@/lib/schemas";
 import { z } from "zod";
+import { client } from "@/lib/client";
+import { useRouter } from "next/navigation";
 
 type SignUpFormData = z.infer<typeof SignUpSchema>;
 
@@ -17,6 +19,7 @@ export default function Register() {
     formState: { isLoading, errors },
     handleSubmit,
     setValue,
+    setError,
   } = useForm<SignUpFormData>({
     resolver: zodResolver(SignUpSchema),
   });
@@ -24,7 +27,16 @@ export default function Register() {
   const [avatar, setAvatar] = useState<string>();
 
   const onSubmit = handleSubmit(async (data) => {
-    console.log(data);
+    const res = await client.user.register.$post(data);
+    const { success, msg } = await res.json();
+
+    if (success) {
+      useRouter().push("/profile");
+    } else {
+      setError("root", {
+        message: String(msg),
+      });
+    }
   });
 
   return (
@@ -101,6 +113,9 @@ export default function Register() {
             Already have an account?
           </Link>
         </div>
+        {errors.root && (
+          <p className="text-xs text-red-500">{errors.root.message}</p>
+        )}
         <button type="submit" className="btn" disabled={isLoading}>
           {isLoading ? (
             <>

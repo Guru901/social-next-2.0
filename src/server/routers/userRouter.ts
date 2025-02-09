@@ -40,6 +40,7 @@ export const userRouter = j.router({
       const response = c.json({
         success: true,
         data: newUser,
+        msg: "registered successfully",
       });
 
       setCookie("token", token, {

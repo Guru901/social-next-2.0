@@ -1,5 +1,5 @@
 import { j } from "./jstack";
-import { postRouter } from "./routers/post-router";
+import { userRouter } from "./routers/userRouter";
 
 const api = j
   .router()
@@ -8,7 +8,7 @@ const api = j
   .onError(j.defaults.errorHandler);
 
 const appRouter = j.mergeRouters(api, {
-  post: postRouter,
+  user: userRouter,
 });
 
 export type AppRouter = typeof appRouter;

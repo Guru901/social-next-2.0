@@ -4,121 +4,94 @@ import { CldUploadWidget } from "next-cloudinary";
 import Link from "next/link";
 import { Loader2 } from "lucide-react";
 import React, { useState } from "react";
-// import axios from "axios";
-// import { useUserStore } from "@/store/userStore";
-import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { SignUpSchema } from "@/lib/schemas";
+import { z } from "zod";
+
+type SignUpFormData = z.infer<typeof SignUpSchema>;
 
 export default function Register() {
-  // const [form, setForm] = useState({
-  //   username: "",
-  //   password: "",
-  // });
-  // const [error, setError] = useState("");
-  // const [pswd, setPswd] = useState("");
-  // const [avatar, setAvatar] = useState();
-  // const [loading, setLoading] = useState(false);
+  const {
+    register,
+    formState: { isLoading, errors },
+    handleSubmit,
+    setValue,
+  } = useForm<SignUpFormData>({
+    resolver: zodResolver(SignUpSchema),
+  });
 
-  // const router = useRouter();
+  const [avatar, setAvatar] = useState<string>();
 
-  // // const { setUser, user } = useUserStore();
-  // const handleChange = (e) => {
-  //   setForm({
-  //     ...form,
-  //     [e.target.name]: e.target.value,
-  //   });
-  // };
+  const onSubmit = handleSubmit(async (data) => {
+    console.log(data);
+  });
 
-  // const pswdCheck = () => {
-  //   if (pswd !== form.password) {
-  //     setError("Passwords don't match");
-  //     return false;
-  //   }
-  //   return true;
-  // };
-
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-
-  //   try {
-  //     if (pswdCheck()) {
-  //       setLoading(true);
-  //       const { data } = await axios.post("/api/user/register", {
-  //         params: {
-  //           username: form.username,
-  //           password: form.password,
-  //           file: avatar,
-  //         },
-  //       });
-
-  //       if (data) {
-  //         if (data?.success) {
-  //           router.push("/profile");
-  //           setUser(data?.user);
-  //           setLoading(false);
-  //         } else {
-  //           setError(data?.msg);
-  //           router.push("/");
-  //           setLoading(false);
-  //         }
-  //       }
-  //       setLoading(false);
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //     setLoading(false);
-  //   }
-  // };
   return (
     <div className="flex flex-col w-[100svw] h-[100svh] justify-evenly items-center px-5">
       <div className="flex justify-between">
         <h1 className="text-3xl">Start your Journey</h1>
       </div>
-      <form
-        className="flex flex-col w-full max-w-sm gap-3"
-        onSubmit={handleSubmit}
-        encType="mutlipart/form-data"
-      >
-        <input
-          type="text"
-          placeholder="Enter Your Username.."
-          name="username"
-          className="input input-bordered w-full"
-          onChange={handleChange}
-          required
-        />
-        <input
-          type="password"
-          placeholder="Enter Your Password.."
-          name="password"
-          className="input input-bordered w-full"
-          onChange={handleChange}
-          required
-          minLength={6}
-        />
-        <input
-          type="password"
-          placeholder="Confirm Password.."
-          name="password"
-          className="input input-bordered w-full"
-          onChange={(e) => setPswd(e.target.value)}
-          required
-          minLength={6}
-        />
+      <form onSubmit={onSubmit} className="flex flex-col w-full max-w-sm gap-3">
+        <div>
+          <input
+            type="text"
+            placeholder="Enter Your Username.."
+            {...register("username")}
+            className="input input-bordered w-full"
+          />
+          {errors.username && (
+            <p className="text-xs text-red-500">{errors.username.message}</p>
+          )}
+        </div>
+        <div>
+          <input
+            type="password"
+            placeholder="Enter Your Password.."
+            className="input input-bordered w-full"
+            {...register("password")}
+          />
+          {errors.password && (
+            <p className="text-xs text-red-500">{errors.password.message}</p>
+          )}
+        </div>
+        <div>
+          <input
+            type="password"
+            placeholder="Confirm Password.."
+            className="input input-bordered w-full"
+            {...register("confirmPassword")}
+          />
+          {errors.confirmPassword && (
+            <p className="text-xs text-red-500">
+              {errors.confirmPassword.message}
+            </p>
+          )}
+        </div>
         <CldUploadWidget
           uploadPreset="social-nextest"
           onSuccess={(results) => {
             // @ts-ignore
-            setAvatar(results.info.secure_url);
+            const secureUrl = results.info.secure_url;
+            setAvatar(secureUrl);
+            setValue("avatar", secureUrl);
           }}
         >
           {({ open }) => {
             return (
-              <button type="button" onClick={() => open()}>
-                Select Avatar
+              <button
+                type="button"
+                onClick={() => open()}
+                className="btn btn-secondary"
+              >
+                {avatar ? "Change Avatar" : "Select Avatar"}
               </button>
             );
           }}
         </CldUploadWidget>
+        {errors.avatar && (
+          <p className="text-xs text-red-500">{errors.avatar.message}</p>
+        )}
         <div className="flex flex-col text-xs gap-1">
           <h1>Remember you cant ever change the username</h1>
           <Link href={"/"} className="underline">
@@ -127,10 +100,9 @@ export default function Register() {
           <Link href={"/login"} className="underline">
             Already have an account?
           </Link>
-          <h2 className="text-center text-[#ef4c53]">{error}</h2>
         </div>
-        <button type="submit" className="btn" disabled={loading}>
-          {loading ? (
+        <button type="submit" className="btn" disabled={isLoading}>
+          {isLoading ? (
             <>
               <Loader2 className="animate-spin" />
               Please wait

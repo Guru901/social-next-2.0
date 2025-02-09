@@ -35,7 +35,7 @@ export const userRouter = j.router({
         id: newUser._id,
       };
 
-      const token = jwt.sign(tokenData, process.env.TOKEN_SECRET);
+      const token = jwt.sign(tokenData, process.env.TOKEN_SECRET!);
 
       const response = c.json({
         success: true,

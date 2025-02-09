@@ -1,5 +1,5 @@
 import { j, publicProcedure } from "../jstack";
-import { SignUpSchema } from "@/lib/schemas";
+import { LoginSchema, SignUpSchema } from "@/lib/schemas";
 import User from "../models/userModel";
 import { connectToDb } from "../db/connect";
 import jwt from "jsonwebtoken";
@@ -51,4 +51,46 @@ export const userRouter = j.router({
 
       return response;
     }),
+
+  login: publicProcedure.input(LoginSchema).mutation(async ({ input, c }) => {
+    await connectToDb();
+    const { username, password } = input;
+
+    const user = await User.findOne({ username: username });
+
+    if (!user) {
+      return c.json({
+        success: false,
+        msg: "Username or password is incorrect",
+      });
+    }
+
+    const isPasswordCorrect = await user.isPasswordCorrect(password);
+
+    if (isPasswordCorrect) {
+      const tokenData = {
+        id: user._id,
+      };
+
+      const token = jwt.sign(tokenData, process.env.TOKEN_SECRET as string);
+      user.password = "";
+
+      setCookie("token", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        expires: new Date(Date.now() + 3600 * 1000),
+      });
+
+      return c.json({
+        success: true,
+        data: user,
+      });
+    }
+
+    return c.json({
+      success: false,
+      msg: "Username or password is incorrect",
+    });
+  }),
 });

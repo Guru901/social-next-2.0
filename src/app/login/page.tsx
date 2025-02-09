@@ -13,6 +13,7 @@ import { useRouter } from "next/navigation";
 type LoginFormData = z.infer<typeof LoginSchema>;
 
 export default function Login() {
+  const router = useRouter();
   const {
     register,
     handleSubmit,
@@ -28,7 +29,7 @@ export default function Login() {
     const { success, msg } = await res.json();
 
     if (success) {
-      useRouter().push("/profile");
+      router.push("/profile");
     } else {
       setError("root", {
         message: String(msg),

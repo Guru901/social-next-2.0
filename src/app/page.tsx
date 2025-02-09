@@ -14,6 +14,7 @@ import { useRouter } from "next/navigation";
 type SignUpFormData = z.infer<typeof SignUpSchema>;
 
 export default function Register() {
+  const router = useRouter();
   const {
     register,
     formState: { isLoading, errors },
@@ -31,7 +32,7 @@ export default function Register() {
     const { success, msg } = await res.json();
 
     if (success) {
-      useRouter().push("/profile");
+      router.push("/profile");
     } else {
       setError("root", {
         message: String(msg),

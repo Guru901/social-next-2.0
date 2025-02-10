@@ -16,3 +16,12 @@ export const LoginSchema = z.object({
   username: z.string(),
   password: z.string(),
 });
+
+export const PostSchema = z.object({
+  title: z.string().min(3),
+  body: z.string().min(3),
+  image: z.string().optional(),
+  isPublic: z.boolean().default(true),
+  username: z.string().optional(),
+  topic: z.string().default("general"),
+});

@@ -4,6 +4,7 @@ import { j, publicProcedure } from "../jstack";
 import Post from "../models/postModel";
 import User from "../models/userModel";
 import { connectToDb } from "../db/connect";
+import { PostSchema } from "@/lib/schemas";
 
 export const postRouter = j.router({
   getUserLikedPosts: publicProcedure.query(async ({ c }) => {
@@ -229,4 +230,36 @@ export const postRouter = j.router({
         post,
       });
     }),
+
+  upload: publicProcedure.input(PostSchema).mutation(async ({ c, input }) => {
+    await connectToDb();
+
+    const { success, user, msg } = auth(c);
+    if (!success) {
+      return c.json({
+        success: false,
+        msg,
+        posts: [],
+      });
+    }
+
+    const { title, body, image, isPublic, username, topic } = input;
+
+    const newPost = await Post.create({
+      title: title,
+      body: body,
+      image: image,
+      user: user,
+      username: username,
+      isPublic: isPublic,
+      topic: topic,
+    });
+    await newPost.save();
+
+    return c.json({
+      success: true,
+      msg: "Post uploaded",
+      post: newPost,
+    });
+  }),
 });

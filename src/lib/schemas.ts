@@ -34,3 +34,10 @@ export const CommentSchema = z.object({
   avatar: z.string().optional(),
   replyTo: z.string().optional(),
 });
+
+export const AddFriendSchema = z.object({
+  from: z.string(),
+  userId: z.string(),
+  fromAvatar: z.string().optional(),
+  type: z.string(),
+});

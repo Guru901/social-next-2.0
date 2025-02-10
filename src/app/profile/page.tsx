@@ -32,7 +32,7 @@ export default function Profile() {
         const { posts } = await res.json();
         return posts.reverse();
       } else {
-        const res = await client.user.getUserPosts.$post({
+        const res = await client.user.getLoggedInUserPosts.$post({
           isPublic: selectedOption === "publicPosts",
         });
         const { posts } = await res.json();

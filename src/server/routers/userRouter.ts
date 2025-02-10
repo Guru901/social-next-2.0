@@ -1,5 +1,5 @@
 import { j, publicProcedure } from "../jstack";
-import { LoginSchema, SignUpSchema } from "@/lib/schemas";
+import { AddFriendSchema, LoginSchema, SignUpSchema } from "@/lib/schemas";
 import User from "../models/userModel";
 import { connectToDb } from "../db/connect";
 import jwt from "jsonwebtoken";
@@ -7,6 +7,7 @@ import { setCookie, getCookie } from "hono/cookie";
 import { z } from "zod";
 import auth from "../helper/auth";
 import Post from "../models/postModel";
+import Notifications from "../models/notificationModel";
 
 export const userRouter = j.router({
   register: publicProcedure
@@ -120,7 +121,7 @@ export const userRouter = j.router({
     });
   }),
 
-  getUserPosts: publicProcedure
+  getLoggedInUserPosts: publicProcedure
     .input(z.object({ isPublic: z.boolean().default(true) }))
     .mutation(async ({ c, input }) => {
       await connectToDb();
@@ -141,6 +142,39 @@ export const userRouter = j.router({
       return c.json({
         success: true,
         msg: "Posts found",
+        posts,
+      });
+    }),
+
+  getUserPosts: publicProcedure
+    .input(z.object({ isPublic: z.boolean().default(true), id: z.string() }))
+    .mutation(async ({ c, input }) => {
+      await connectToDb();
+      const { isPublic, id } = input;
+
+      const posts = await Post.find({ user: id, isPublic: isPublic }).select(
+        "image"
+      );
+
+      return c.json({
+        success: true,
+        msg: "Posts found",
+        posts,
+      });
+    }),
+
+  getUserLikedPosts: publicProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ input, c }) => {
+      await connectToDb();
+      const { id } = input;
+      const posts = await Post.find({
+        likes: { $in: [id] },
+        isPublic: true,
+      });
+
+      return c.json({
+        success: true,
         posts,
       });
     }),
@@ -175,4 +209,59 @@ export const userRouter = j.router({
       users,
     });
   }),
+
+  addFriend: publicProcedure
+    .input(AddFriendSchema)
+    .mutation(async ({ input, c }) => {
+      const { from, userId, type, fromAvatar } = input;
+
+      await Notifications.create({
+        from: from,
+        to: userId,
+        fromAvatar: fromAvatar,
+        notificationType: type,
+      });
+
+      return c.json({
+        success: true,
+      });
+    }),
+
+  checkFriend: publicProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ input, c }) => {
+      const { user: userId, success, msg } = auth(c);
+
+      const { id } = input;
+
+      if (!success) {
+        return c.json({
+          success,
+          msg,
+        });
+      }
+
+      const user = await User.findById(id);
+
+      if (user.friends.includes(userId)) {
+        return c.json({
+          success: true,
+        });
+      } else {
+        return c.json({
+          success: false,
+        });
+      }
+    }),
+
+  getUserById: publicProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ input, c }) => {
+      const user = await User.findById(input.id);
+
+      return c.json({
+        success: true,
+        user,
+      });
+    }),
 });

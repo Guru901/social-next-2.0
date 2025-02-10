@@ -9,5 +9,5 @@ function getBaseUrl() {
   if (process.env.NODE_ENV === "production") {
     return "https://social-next-2-0.vercel.app";
   }
-  return `http://localhost:8080`;
+  return `http://localhost:3000`;
 }

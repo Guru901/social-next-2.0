@@ -300,4 +300,75 @@ export const userRouter = j.router({
       friendsData,
     });
   }),
+
+  getNotifications: publicProcedure.query(async ({ c }) => {
+    await connectToDb();
+    const { user, success, msg } = auth(c);
+    if (!success) {
+      return c.json({
+        success,
+        msg,
+        notifications: [],
+      });
+    }
+    const notifications = await Notifications.find({
+      to: user,
+      isAccepted: false,
+    });
+
+    return c.json({
+      success: true,
+      msg: "Notifications found",
+      notifications,
+    });
+  }),
+
+  acceptNotification: publicProcedure
+    .input(
+      z.object({
+        notificationType: z.string(),
+        from: z.string(),
+        notificationId: z.string(),
+      })
+    )
+    .mutation(async ({ input, c }) => {
+      await connectToDb();
+      const { user, success, msg } = auth(c);
+      if (!success) {
+        return c.json({
+          success,
+          msg,
+        });
+      }
+      const { notificationType, from, notificationId } = input;
+
+      if (notificationType === "friendAdd") {
+        const fromUser = await User.findOne({ username: from });
+        const toUser = await User.findById(user);
+
+        if (!fromUser || !toUser) {
+          return c.json({ msg: "User not found" });
+        }
+
+        if (toUser.friends.includes(fromUser._id.toString())) {
+          return c.json({ msg: "Already friends" });
+        }
+
+        toUser.friends.push(fromUser._id);
+        await toUser.save();
+
+        fromUser.friends.push(toUser._id);
+        await fromUser.save();
+
+        const noitification = await Notifications.findById(notificationId);
+
+        noitification.isAccepted = true;
+        noitification.isSeen = true;
+
+        await noitification.save();
+
+        const updatedFriends = toUser.friends;
+        return c.json(updatedFriends);
+      }
+    }),
 });

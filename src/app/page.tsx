@@ -17,7 +17,7 @@ export default function Register() {
   const router = useRouter();
   const {
     register,
-    formState: { isLoading, errors },
+    formState: { isSubmitting, errors },
     handleSubmit,
     setValue,
     setError,
@@ -113,8 +113,8 @@ export default function Register() {
         {errors.root && (
           <p className="text-xs text-red-500">{errors.root.message}</p>
         )}
-        <button type="submit" className="btn" disabled={isLoading}>
-          {isLoading ? (
+        <button type="submit" className="btn" disabled={isSubmitting}>
+          {isSubmitting ? (
             <>
               <Loader2 className="animate-spin" />
               Please wait

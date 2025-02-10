@@ -7,6 +7,7 @@ import { connectToDb } from "../db/connect";
 
 export const postRouter = j.router({
   getUserLikedPosts: publicProcedure.query(async ({ c }) => {
+    await connectToDb();
     const { success, user, msg } = auth(c);
     if (!success) {
       return c.json({
@@ -35,6 +36,7 @@ export const postRouter = j.router({
       })
     )
     .query(async ({ c, input }) => {
+      await connectToDb();
       const { success } = auth(c);
       if (!success) {
         return c.json({
@@ -59,6 +61,7 @@ export const postRouter = j.router({
     }),
 
   getFriendsPost: publicProcedure.query(async ({ c }) => {
+    await connectToDb();
     const { success, user, msg } = auth(c);
     if (!success) {
       return c.json({
@@ -110,6 +113,7 @@ export const postRouter = j.router({
   like: publicProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ c, input }) => {
+      await connectToDb();
       const { success, user, msg } = auth(c);
       if (!success) {
         return c.json({
@@ -139,6 +143,7 @@ export const postRouter = j.router({
   unlike: publicProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ c, input }) => {
+      await connectToDb();
       const { success, user, msg } = auth(c);
       if (!success) {
         return c.json({
@@ -168,6 +173,7 @@ export const postRouter = j.router({
   dislike: publicProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ c, input }) => {
+      await connectToDb();
       const { success, user, msg } = auth(c);
       if (!success) {
         return c.json({
@@ -197,6 +203,7 @@ export const postRouter = j.router({
   disunlike: publicProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ c, input }) => {
+      await connectToDb();
       const { success, user, msg } = auth(c);
       if (!success) {
         return c.json({

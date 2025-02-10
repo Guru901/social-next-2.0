@@ -144,4 +144,24 @@ export const userRouter = j.router({
         posts,
       });
     }),
+  search: publicProcedure
+    .input(z.object({ search: z.string() }))
+    .query(async ({ input, c }) => {
+      await connectToDb();
+      const { success, msg, user } = auth(c);
+
+      if (!success) {
+        return c.json({ success: false, msg: "Unauthorized", users: [] });
+      }
+
+      const usernameRegex = new RegExp(input.search, "i");
+
+      const users = await User.find({ username: { $regex: usernameRegex } });
+
+      if (!users) {
+        return c.json({ success: false, msg: "No users found", users: [] });
+      }
+
+      return c.json({ success: true, msg: "Users found", users });
+    }),
 });

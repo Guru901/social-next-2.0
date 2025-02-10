@@ -19,7 +19,7 @@ export function FetchOptions({ selectedOption, setSelectedOption }) {
       {PostItems.map((postItem) => (
         <input
           key={postItem.lable}
-          className="join-item btn w-[33%] p-1 h-min"
+          className="join-item btn w-[33%] p-1"
           name="options"
           type="radio"
           aria-label={postItem.lable}

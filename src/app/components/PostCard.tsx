@@ -169,8 +169,10 @@ export default function PostCard({
         <div className="card-body gap-1 p-4 flex-col justify-between">
           <div className="flex flex-col gap-2">
             <div>
-              <h2 className="card-title text-white font-[500]">{post.title}</h2>
-              <p className="max-h-24 overflow-hidden">
+              <h2 className="card-title text-xl text-white font-[500]">
+                {post.title}
+              </h2>
+              <p className="max-h-24 text-[16px] overflow-hidden">
                 {post.body &&
                   post?.body
                     .split("\n")

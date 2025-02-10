@@ -58,7 +58,7 @@ const Feed = () => {
       <div className="flex justify-center">
         <Nav />
       </div>
-      <div>
+      <div className="mt-6">
         <div className="mt-2 flex w-screen md:justify-start items-center px-6 md:px-14">
           <FetchOptions
             selectedOption={selectedOption}

@@ -264,4 +264,12 @@ export const userRouter = j.router({
         user,
       });
     }),
+
+  logout: publicProcedure.query(async ({ c }) => {
+    setCookie(c, "token", "");
+
+    return c.json({
+      success: true,
+    });
+  }),
 });

@@ -365,4 +365,26 @@ export const postRouter = j.router({
         msg: "Post deleted successfully",
       });
     }),
+
+  getAllComments: publicProcedure.query(async ({ c }) => {
+    await connectToDb();
+    const comments = await Comment.find();
+
+    return c.json({
+      success: true,
+      msg: "Comments found",
+      comments,
+    });
+  }),
+
+  getAllPostForAdmin: publicProcedure.query(async ({ c }) => {
+    await connectToDb();
+    const posts = await Post.find();
+
+    return c.json({
+      success: true,
+      msg: "Posts found",
+      posts,
+    });
+  }),
 });

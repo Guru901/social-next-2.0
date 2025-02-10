@@ -3,7 +3,7 @@ import { LoginSchema, SignUpSchema } from "@/lib/schemas";
 import User from "../models/userModel";
 import { connectToDb } from "../db/connect";
 import jwt from "jsonwebtoken";
-import { setCookie } from "cookies-next";
+import { getCookie, setCookie } from "cookies-next";
 
 export const userRouter = j.router({
   register: publicProcedure
@@ -93,6 +93,27 @@ export const userRouter = j.router({
     return c.json({
       success: false,
       msg: "Username or password is incorrect",
+    });
+  }),
+
+  me: publicProcedure.query(async ({ c }) => {
+    await connectToDb();
+    const token = await getCookie("token");
+    const { id } = jwt.decode(token) as { id: string };
+    const user = await User.findById(id);
+
+    if (!user) {
+      return c.json({
+        success: false,
+        user: null,
+        msg: "User not found",
+      });
+    }
+
+    return c.json({
+      success: true,
+      user,
+      msg: "User found",
     });
   }),
 });

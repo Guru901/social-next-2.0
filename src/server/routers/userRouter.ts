@@ -4,6 +4,9 @@ import User from "../models/userModel";
 import { connectToDb } from "../db/connect";
 import jwt from "jsonwebtoken";
 import { setCookie, getCookie } from "hono/cookie";
+import { z } from "zod";
+import auth from "../helper/auth";
+import Post from "../models/postModel";
 
 export const userRouter = j.router({
   register: publicProcedure
@@ -100,7 +103,7 @@ export const userRouter = j.router({
     await connectToDb();
     const token = getCookie(c, "token");
     const { id } = jwt.decode(token) as { id: string };
-    const user = await User.findById(id);
+    const user = await User.findById(id).select("-password");
 
     if (!user) {
       return c.json({
@@ -116,4 +119,29 @@ export const userRouter = j.router({
       msg: "User found",
     });
   }),
+
+  getUserPosts: publicProcedure
+    .input(z.object({ isPublic: z.boolean().default(true) }))
+    .mutation(async ({ c, input }) => {
+      await connectToDb();
+      const { isPublic } = input;
+      const { success, user, msg } = auth(c);
+      if (!success) {
+        return c.json({
+          success: false,
+          msg,
+          posts: [],
+        });
+      }
+
+      const posts = await Post.find({ user: user, isPublic: isPublic }).select(
+        "image"
+      );
+
+      return c.json({
+        success: true,
+        msg: "Posts found",
+        posts,
+      });
+    }),
 });

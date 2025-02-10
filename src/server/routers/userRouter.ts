@@ -164,4 +164,15 @@ export const userRouter = j.router({
 
       return c.json({ success: true, msg: "Users found", users });
     }),
+
+  getAllUsers: publicProcedure.query(async ({ c }) => {
+    await connectToDb();
+    const users = await User.find();
+
+    return c.json({
+      success: true,
+      msg: "Users found",
+      users,
+    });
+  }),
 });

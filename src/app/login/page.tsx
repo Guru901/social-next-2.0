@@ -17,7 +17,7 @@ export default function Login() {
   const {
     register,
     handleSubmit,
-    formState: { isLoading, errors },
+    formState: { isSubmitting, errors },
     setError,
   } = useForm<LoginFormData>({
     resolver: zodResolver(LoginSchema),
@@ -74,8 +74,12 @@ export default function Login() {
             Dont have an account?
           </Link>
         </div>
-        <button type="submit" className="btn" disabled={isLoading}>
-          {isLoading ? <Loader2 className="animate-spin h-5 w-5" /> : "Submit"}
+        <button type="submit" className="btn" disabled={isSubmitting}>
+          {isSubmitting ? (
+            <Loader2 className="animate-spin h-5 w-5" />
+          ) : (
+            "Submit"
+          )}
         </button>
       </form>
     </div>

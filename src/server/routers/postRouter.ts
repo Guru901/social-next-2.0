@@ -262,4 +262,23 @@ export const postRouter = j.router({
       post: newPost,
     });
   }),
+
+  getTopicPost: publicProcedure
+    .input(z.object({ topicName: z.string() }))
+    .query(async ({ c, input }) => {
+      await connectToDb();
+
+      const { topicName } = input;
+
+      const posts = await Post.find({
+        isPublic: true,
+        topic: topicName.toLowerCase() || "",
+      }).populate("user", "username avatar");
+
+      return c.json({
+        success: true,
+        msg: "Post uploaded",
+        posts: posts,
+      });
+    }),
 });

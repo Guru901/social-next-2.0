@@ -90,7 +90,7 @@ const Nav = () => {
     {
       title: "All Topics",
       icon: <Folder size={20} strokeWidth={4} />,
-      path: "/alltopics",
+      path: "/all-topics",
     },
   ];
 

@@ -1,5 +1,5 @@
 import { j } from "./jstack";
-import { postRouter } from "./routers/posrRouter";
+import { postRouter } from "./routers/postRouter";
 import { userRouter } from "./routers/userRouter";
 
 const api = j

@@ -9,9 +9,7 @@ const splineSans = Spline_Sans({
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "JStack App",
-  description: "Created using JStack",
-  icons: [{ rel: "icon", url: "/favicon.ico" }],
+  title: "Social Next",
 };
 
 export default function RootLayout({

@@ -2,8 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-// import Spinner from "@/components/Spinner";
-// import Nav from "@/components/Nav";
+import Nav from "@/app/components/Nav";
 import { useQuery } from "@tanstack/react-query";
 import useGetUser from "@/hooks/useGetUser";
 import UserDetails from "@/app/components/UserDetails";
@@ -56,7 +55,7 @@ export default function Profile() {
   return (
     <div className="flex flex-col w-[100svw] min-h-screen">
       <div>
-        {/* <Nav /> */}
+        <Nav />
         <UserDetails user={user} posts={[]} isProfile={true} />
       </div>
 

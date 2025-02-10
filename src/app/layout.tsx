@@ -1,6 +1,11 @@
-import type { Metadata } from "next";
 import { Providers } from "./components/providers";
+import { Spline_Sans } from "next/font/google";
+import type { Metadata } from "next";
 
+const splineSans = Spline_Sans({
+  weight: ["400", "500", "300"],
+  subsets: ["latin"],
+});
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -16,7 +21,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="antialiased">
+      <body className={`antialiased ${splineSans.className}`}>
         <Providers>{children}</Providers>
       </body>
     </html>

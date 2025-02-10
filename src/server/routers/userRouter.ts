@@ -371,4 +371,74 @@ export const userRouter = j.router({
         return c.json(updatedFriends);
       }
     }),
+
+  editAvatar: publicProcedure
+    .input(z.object({ avatar: z.string() }))
+    .mutation(async ({ input, c }) => {
+      await connectToDb();
+      const { success, user, msg } = auth(c);
+      if (!success) {
+        return c.json({
+          success: false,
+          msg,
+        });
+      }
+
+      const { avatar } = input;
+
+      const userToUpdate = await User.findById(user);
+
+      if (userToUpdate._id !== user) {
+        return c.json({
+          success: false,
+          msg: "Unauthorized",
+        });
+      }
+
+      userToUpdate.avatar = avatar;
+
+      await userToUpdate.save();
+
+      return c.json({
+        success: true,
+        msg: "Avatar updated successfully",
+      });
+    }),
+
+  changePassword: publicProcedure
+    .input(
+      z.object({
+        oldPass: z.string(),
+        newPass: z.string(),
+      })
+    )
+    .mutation(async ({ input, c }) => {
+      await connectToDb();
+      const { success, user, msg } = auth(c);
+      if (!success) {
+        return c.json({
+          success: false,
+          msg,
+        });
+      }
+
+      const loggedInUser = await User.findById(user);
+      const { oldPass, newPass } = input;
+
+      if (oldPass !== loggedInUser.password) {
+        const response = c.json({
+          msg: "Old password does not match.",
+          success: false,
+        });
+        return response;
+      }
+
+      loggedInUser.password = newPass;
+
+      await loggedInUser.save();
+      return c.json({
+        success: true,
+        msg: "Password changed successfully",
+      });
+    }),
 });

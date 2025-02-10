@@ -2,7 +2,7 @@
 
 import { CldUploadWidget } from "next-cloudinary";
 import { useRouter } from "next/navigation";
-import React, { ChangeEvent, useRef, useState } from "react";
+import React from "react";
 import Nav from "@/app/components/Nav";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
@@ -23,6 +23,7 @@ export default function Upload() {
     setValue,
     handleSubmit,
     setError,
+    control,
   } = useForm<UploadForm>({
     resolver: zodResolver(PostSchema),
   });
@@ -125,18 +126,20 @@ export default function Upload() {
           )}
           <div className="w-full flex justify-center items-center">
             <Controller
-              render={() => (
+              control={control}
+              name="isPublic"
+              defaultValue={true}
+              render={({ field }) => (
                 <select
                   className="select select-bordered w-full max-w-lg"
-                  onChange={(e) =>
-                    setValue("isPublic", e.target.value === "true")
-                  }
+                  {...field}
+                  onChange={(e) => field.onChange(e.target.value === "true")}
+                  value={field.value ? "true" : "false"}
                 >
                   <option value="true">Public</option>
                   <option value="false">Private</option>
                 </select>
               )}
-              name="isPublic"
             />
             {errors.isPublic && (
               <p className="text-sm text-red-500">{errors.isPublic.message}</p>
@@ -144,12 +147,15 @@ export default function Upload() {
           </div>
           <div className="w-full flex justify-center items-center">
             <Controller
-              render={() => (
+              control={control}
+              name="topic"
+              defaultValue="general"
+              render={({ field }) => (
                 <select
                   className="select select-bordered w-full max-w-lg"
-                  onChange={(e) => setValue("topic", e.target.value)}
+                  {...field}
                 >
-                  <option value={"general"}>Global</option>
+                  <option value="general">Global</option>
                   {topics?.map((topic) => (
                     <option key={topic.name} value={topic.name.toLowerCase()}>
                       {topic.name}
@@ -157,7 +163,6 @@ export default function Upload() {
                   ))}
                 </select>
               )}
-              name="topic"
             />
             {errors.topic && (
               <p className="text-sm text-red-500">{errors.topic.message}</p>

@@ -3,7 +3,7 @@ import { LoginSchema, SignUpSchema } from "@/lib/schemas";
 import User from "../models/userModel";
 import { connectToDb } from "../db/connect";
 import jwt from "jsonwebtoken";
-import { getCookie, setCookie } from "cookies-next";
+import { setCookie, getCookie } from "hono/cookie";
 
 export const userRouter = j.router({
   register: publicProcedure
@@ -43,7 +43,7 @@ export const userRouter = j.router({
         msg: "registered successfully",
       });
 
-      setCookie("token", token, {
+      setCookie(c, "token", token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: "strict",
@@ -76,7 +76,7 @@ export const userRouter = j.router({
       const token = jwt.sign(tokenData, process.env.TOKEN_SECRET as string);
       user.password = "";
 
-      setCookie("token", token, {
+      setCookie(c, "token", token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: "strict",
@@ -98,7 +98,7 @@ export const userRouter = j.router({
 
   me: publicProcedure.query(async ({ c }) => {
     await connectToDb();
-    const token = await getCookie("token");
+    const token = getCookie(c, "token");
     const { id } = jwt.decode(token) as { id: string };
     const user = await User.findById(id);
 

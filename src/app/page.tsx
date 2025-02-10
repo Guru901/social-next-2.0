@@ -92,11 +92,7 @@ export default function Register() {
         >
           {({ open }) => {
             return (
-              <button
-                type="button"
-                onClick={() => open()}
-                className="btn btn-secondary"
-              >
+              <button type="button" onClick={() => open()} className="btn">
                 {avatar ? "Change Avatar" : "Select Avatar"}
               </button>
             );

@@ -25,3 +25,12 @@ export const PostSchema = z.object({
   username: z.string().optional(),
   topic: z.string().default("general"),
 });
+
+export const CommentSchema = z.object({
+  comment: z.string(),
+  postId: z.string(),
+  image: z.string().optional(),
+  username: z.string(),
+  avatar: z.string().optional(),
+  replyTo: z.string().optional(),
+});

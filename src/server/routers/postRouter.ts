@@ -2,9 +2,10 @@ import { z } from "zod";
 import auth from "../helper/auth";
 import { j, publicProcedure } from "../jstack";
 import Post from "../models/postModel";
+import Comment from "../models/commentModel";
 import User from "../models/userModel";
 import { connectToDb } from "../db/connect";
-import { PostSchema } from "@/lib/schemas";
+import { CommentSchema, PostSchema } from "@/lib/schemas";
 
 export const postRouter = j.router({
   getUserLikedPosts: publicProcedure.query(async ({ c }) => {
@@ -279,6 +280,89 @@ export const postRouter = j.router({
         success: true,
         msg: "Post uploaded",
         posts: posts,
+      });
+    }),
+
+  getPostById: publicProcedure
+    .input(z.object({ postId: z.string() }))
+    .query(async ({ input, c }) => {
+      await connectToDb();
+
+      const { postId } = input;
+
+      const post = await Post.findById(postId).populate("user");
+
+      return c.json({
+        success: true,
+        post: post,
+      });
+    }),
+
+  getComments: publicProcedure
+    .input(z.object({ postId: z.string() }))
+    .query(async ({ c, input }) => {
+      await connectToDb();
+
+      const comments = await Comment.find({ post: input.postId });
+
+      return c.json({
+        success: true,
+        comments,
+      });
+    }),
+
+  comment: publicProcedure
+    .input(CommentSchema)
+    .mutation(async ({ input, c }) => {
+      const { comment, postId, username, image, replyTo, avatar } = input;
+
+      const newComment = await Comment.create({
+        text: comment,
+        post: postId,
+        user: username,
+        image: image,
+        isAReply: replyTo ? true : false,
+        avatar: avatar ? avatar : "",
+      });
+
+      if (replyTo.length > 0) {
+        const reply = await Comment.findById(replyTo);
+        if (reply) {
+          reply.replies.push(newComment._id);
+          await reply.save();
+        }
+      }
+
+      await newComment.save();
+
+      return c.json({
+        success: true,
+      });
+    }),
+
+  delete: publicProcedure
+    .input(z.object({ postId: z.string() }))
+    .mutation(async ({ input, c }) => {
+      await connectToDb();
+      const { success, msg, user } = auth(c);
+
+      if (!success) {
+        return c.json({
+          success: false,
+          msg,
+        });
+      }
+
+      const { postId } = input;
+
+      await Post.findOneAndDelete({
+        _id: postId,
+        user: user,
+      });
+
+      return c.json({
+        success: true,
+        msg: "Post deleted successfully",
       });
     }),
 });

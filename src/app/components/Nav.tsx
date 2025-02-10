@@ -85,7 +85,7 @@ const Nav = () => {
     {
       title: "Create Topic",
       icon: <Plus size={20} strokeWidth={4} />,
-      path: "/createTopic",
+      path: "/create-topic",
     },
     {
       title: "All Topics",

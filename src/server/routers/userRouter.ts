@@ -272,4 +272,32 @@ export const userRouter = j.router({
       success: true,
     });
   }),
+
+  getFriends: publicProcedure.query(async ({ c }) => {
+    await connectToDb();
+    const { user, success, msg } = auth(c);
+    if (!success) {
+      return c.json({
+        success,
+        msg,
+        friendsData: [],
+      });
+    }
+
+    const loggedInUser = await User.findById(user);
+    const friends = loggedInUser.friends;
+
+    const friendsData = await Promise.all(
+      friends.map(async (x) => {
+        const friend = await User.findById(x);
+        return friend;
+      })
+    );
+
+    return c.json({
+      success: true,
+      msg: "Friends found",
+      friendsData,
+    });
+  }),
 });

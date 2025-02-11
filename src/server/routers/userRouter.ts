@@ -256,25 +256,27 @@ export const userRouter = j.router({
     });
   }),
 
-  getFriends: privateProcedure.query(async ({ c, ctx }) => {
-    await connectToDb();
+  getFriends: publicProcedure
+    .input(z.object({ userId: z.string() }))
+    .query(async ({ c, input }) => {
+      await connectToDb();
 
-    const loggedInUser = await User.findById(ctx.auth);
-    const friends = loggedInUser.friends;
+      const loggedInUser = await User.findById(input.userId);
+      const friends = loggedInUser.friends;
 
-    const friendsData = await Promise.all(
-      friends.map(async (x) => {
-        const friend = await User.findById(x);
-        return friend;
-      })
-    );
+      const friendsData = await Promise.all(
+        friends.map(async (x) => {
+          const friend = await User.findById(x);
+          return friend;
+        })
+      );
 
-    return c.json({
-      success: true,
-      msg: "Friends found",
-      friendsData,
-    });
-  }),
+      return c.json({
+        success: true,
+        msg: "Friends found",
+        friendsData,
+      });
+    }),
 
   getNotifications: privateProcedure.query(async ({ c, ctx }) => {
     await connectToDb();

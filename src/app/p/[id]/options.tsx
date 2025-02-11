@@ -1,6 +1,6 @@
+import { client } from "@/lib/client";
 import { useUserStore } from "@/stores/userStore";
 import { ThumbsDown, ThumbsUp } from "lucide-react";
-// import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -21,19 +21,22 @@ export const Options = ({ post, setPost, refetch }) => {
   const [showToast, setShowToast] = useState(false);
 
   const deletePost = async () => {
-    // const { data } = await axios.post("/api/post/delete", {
-    //   id: post._id,
-    // });
-    // if (data.success) {
-    //   router.push("/feed");
-    // }
+    const res = await client.post.delete.$post({
+      postId: post._id,
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+      router.push("/feed");
+    }
   };
 
   const handleLike = async (id: string) => {
     try {
-      //   await axios.put("/api/likes/like", {
-      //     id: id,
-      //   });
+      await client.post.like.$post({
+        id: id,
+      });
       setPost((prevPost: typeof post) => ({
         ...prevPost,
         likes: [...(prevPost?.likes || []), user?._id],
@@ -45,9 +48,9 @@ export const Options = ({ post, setPost, refetch }) => {
 
   const handleUnLike = async (id: string) => {
     try {
-      //   await axios.put("/api/likes/unlike", {
-      //     id: id,
-      //   });
+      await client.post.unlike.$post({
+        id: id,
+      });
       setPost((prevPost: typeof post) => ({
         ...prevPost,
         likes: prevPost?.likes?.filter((like) => like !== user?._id),
@@ -59,9 +62,9 @@ export const Options = ({ post, setPost, refetch }) => {
 
   const handleDisLike = async (id: string) => {
     try {
-      //   await axios.put("/api/likes/dislike", {
-      //     id: id,
-      //   });
+      await client.post.dislike.$post({
+        id: id,
+      });
       setPost((prevPost: typeof post) => ({
         ...prevPost,
         dislikes: [...(prevPost?.dislikes || []), user?._id],
@@ -73,9 +76,9 @@ export const Options = ({ post, setPost, refetch }) => {
 
   const handleDisUnlike = async (id: string) => {
     try {
-      //   await axios.put("/api/likes/disunlike", {
-      //     id: id,
-      //   });
+      await client.post.disunlike.$post({
+        id: id,
+      });
       setPost((prevPost: typeof post) => ({
         ...prevPost,
         dislikes: prevPost?.dislikes?.filter(

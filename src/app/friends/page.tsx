@@ -1,25 +1,12 @@
-"use client";
-
 import Nav from "@/app/components/Nav";
 import { client } from "@/lib/client";
-import { useQuery } from "@tanstack/react-query";
-import Loader from "../loading";
 import Link from "next/link";
 import Image from "next/image";
 
-export default function FriendsPage() {
-  const { data: friendsData, isLoading } = useQuery({
-    queryKey: ["get-friends"],
-    queryFn: async () => {
-      const res = await client.user.getFriends.$get();
-      const data = await res.json();
-      return data.friendsData;
-    },
-  });
+export default async function FriendsPage() {
+  const { friendsData } = await (await client.user.getFriends.$get()).json();
 
-  return isLoading ? (
-    <Loader />
-  ) : (
+  return (
     <div>
       <Nav />
       <div className="flex flex-wrap justify-center gap-3 py-5 w-[100vw]">

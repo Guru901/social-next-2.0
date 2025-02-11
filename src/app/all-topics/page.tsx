@@ -1,19 +1,9 @@
-"use client";
-
 import Nav from "@/app/components/Nav";
 import { client } from "@/lib/client";
-import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 
-export default function TopicsPage() {
-  const { data: topics, isLoading } = useQuery({
-    queryKey: ["topics"],
-    queryFn: async () => {
-      const res = await client.topic.getAllTopics.$get();
-      const { success, msg, topics } = await res.json();
-      return topics;
-    },
-  });
+export default async function TopicsPage() {
+  const { topics } = await (await client.topic.getAllTopics.$get()).json();
 
   return (
     <div className="flex flex-col gap-3">

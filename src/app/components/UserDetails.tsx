@@ -6,14 +6,14 @@ import { usePathname, useRouter } from "next/navigation";
 
 export default function UserDetails({
   user,
-  posts,
+  postCount,
   isProfile = false,
   isFriend,
   friendBtn,
   addFriend,
 }: {
   user: { username: string; avatar: string; friends: string[] } | null;
-  posts: any[];
+  postCount: number;
   isProfile?: boolean;
   isFriend?: boolean;
   friendBtn?: string;
@@ -74,7 +74,7 @@ export default function UserDetails({
             </div>
             <div>
               <div className="flex gap-1 text-sm text-gray-200">
-                <h1 className="text-center">{posts?.length}</h1>
+                <h1 className="text-center">{postCount}</h1>
                 <h1 className="text-center">Posts</h1>
               </div>
             </div>

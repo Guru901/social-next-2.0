@@ -56,7 +56,7 @@ export default function Profile() {
     <div className="flex flex-col w-[100svw] min-h-screen">
       <div>
         <Nav />
-        <UserDetails user={user} posts={[]} isProfile={true} />
+        <UserDetails user={user} postCount={posts.length} isProfile={true} />
       </div>
 
       <div className="flex flex-col gap-4 w-full bg-gray-900 z-10">

@@ -41,7 +41,7 @@ export default function RegisterForm() {
   });
   return (
     <form onSubmit={onSubmit} className="flex flex-col w-full max-w-sm gap-3">
-      <div>
+      <div className="flex flex-col gap-1">
         <input
           type="text"
           placeholder="Enter Your Username.."
@@ -52,7 +52,7 @@ export default function RegisterForm() {
           <p className="text-xs text-red-500">{errors.username.message}</p>
         )}
       </div>
-      <div>
+      <div className="flex flex-col gap-1">
         <input
           type="password"
           placeholder="Enter Your Password.."
@@ -63,7 +63,7 @@ export default function RegisterForm() {
           <p className="text-xs text-red-500">{errors.password.message}</p>
         )}
       </div>
-      <div>
+      <div className="flex flex-col gap-1">
         <input
           type="password"
           placeholder="Confirm Password.."
@@ -76,26 +76,31 @@ export default function RegisterForm() {
           </p>
         )}
       </div>
-      <CldUploadWidget
-        uploadPreset="social-nextest"
-        onSuccess={(results) => {
-          // @ts-ignore
-          const secureUrl = results.info.secure_url;
-          setAvatar(secureUrl);
-          setValue("avatar", secureUrl);
-        }}
-      >
-        {({ open }) => {
-          return (
-            <button type="button" onClick={() => open()} className="btn">
-              {avatar ? "Change Avatar" : "Select Avatar"}
-            </button>
-          );
-        }}
-      </CldUploadWidget>
-      {errors.avatar && (
-        <p className="text-xs text-red-500">{errors.avatar.message}</p>
-      )}
+      <div className="flex flex-col gap-1">
+        <CldUploadWidget
+          uploadPreset="social-nextest"
+          onSuccess={(results) => {
+            // @ts-ignore
+            const secureUrl = results.info.secure_url;
+            setAvatar(secureUrl);
+            setValue("avatar", secureUrl);
+          }}
+        >
+          {({ open }) => {
+            return (
+              <button type="button" onClick={() => open()} className="btn">
+                {avatar ? "Change Avatar" : "Select Avatar"}
+              </button>
+            );
+          }}
+        </CldUploadWidget>
+        {errors.avatar && (
+          <p className="text-xs text-red-500">{errors.avatar.message}</p>
+        )}
+        {errors.root && (
+          <p className="text-xs text-red-500">{errors.root.message}</p>
+        )}
+      </div>
       <div className="flex flex-col text-xs gap-1">
         <h1>Remember you cant ever change the username</h1>
         <Link href={"/"} className="underline">
@@ -105,9 +110,6 @@ export default function RegisterForm() {
           Already have an account?
         </Link>
       </div>
-      {errors.root && (
-        <p className="text-xs text-red-500">{errors.root.message}</p>
-      )}
       <button type="submit" className="btn" disabled={isSubmitting}>
         {isSubmitting ? (
           <>

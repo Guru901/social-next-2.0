@@ -15,8 +15,8 @@ export const topicRouter = j.router({
       topics,
     });
   }),
-  createTopic: privateProcedure
-    .input(z.object({ name: z.string() }))
+  createTopic: publicProcedure
+    .input(z.object({ name: z.string(), userId: z.string() }))
     .mutation(async ({ c, input }) => {
       await connectToDb();
       const { success, user, msg } = auth(c);

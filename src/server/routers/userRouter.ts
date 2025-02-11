@@ -278,20 +278,22 @@ export const userRouter = j.router({
       });
     }),
 
-  getNotifications: privateProcedure.query(async ({ c, ctx }) => {
-    await connectToDb();
+  getNotifications: publicProcedure
+    .input(z.object({ userId: z.string() }))
+    .query(async ({ c, input }) => {
+      await connectToDb();
 
-    const notifications = await Notifications.find({
-      to: ctx.auth,
-      isAccepted: false,
-    });
+      const notifications = await Notifications.find({
+        to: input.userId,
+        isAccepted: false,
+      });
 
-    return c.json({
-      success: true,
-      msg: "Notifications found",
-      notifications,
-    });
-  }),
+      return c.json({
+        success: true,
+        msg: "Notifications found",
+        notifications,
+      });
+    }),
 
   acceptNotification: privateProcedure
     .input(

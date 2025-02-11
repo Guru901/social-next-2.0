@@ -8,7 +8,7 @@ import { useUserStore } from "@/stores/userStore";
 import { Home, LogOutIcon, Settings, Upload, Users } from "lucide-react";
 import { client } from "@/lib/client";
 
-const Sidebar = () => {
+export default function Sidebar() {
   const router = useRouter();
 
   const { setUser } = useUserStore();
@@ -105,6 +105,4 @@ const Sidebar = () => {
       </div>
     </div>
   );
-};
-
-export default Sidebar;
+}

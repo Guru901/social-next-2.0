@@ -8,7 +8,7 @@ import {
 import { HTTPException } from "hono/http-exception";
 import { PropsWithChildren, useState } from "react";
 
-export const Providers = ({ children }: PropsWithChildren) => {
+export function Providers({ children }: PropsWithChildren) {
   const [queryClient] = useState(
     () =>
       new QueryClient({
@@ -25,4 +25,4 @@ export const Providers = ({ children }: PropsWithChildren) => {
   return (
     <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   );
-};
+}

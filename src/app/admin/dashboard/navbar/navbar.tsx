@@ -3,7 +3,7 @@
 import { usePathname } from "next/navigation";
 import React from "react";
 
-const Navbar = () => {
+export default function Navbar() {
   const pathName = usePathname();
 
   const title = pathName.split("/")[2];
@@ -15,6 +15,4 @@ const Navbar = () => {
       </div>
     </div>
   );
-};
-
-export default Navbar;
+}

@@ -4,7 +4,7 @@ import { ThumbsDown, ThumbsUp } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-const CopyToast = () => {
+function CopyToast() {
   return (
     <div className="toast toast-center">
       <div className="alert alert-info">
@@ -12,9 +12,9 @@ const CopyToast = () => {
       </div>
     </div>
   );
-};
+}
 
-export const Options = ({ post, setPost, refetch }) => {
+export function Options({ post, setPost, refetch }) {
   const { user } = useUserStore();
   const router = useRouter();
 
@@ -186,4 +186,4 @@ export const Options = ({ post, setPost, refetch }) => {
       </div>
     </div>
   );
-};
+}

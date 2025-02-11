@@ -7,7 +7,7 @@ import Loader from "@/app/loading";
 import { User } from "lucide-react";
 import { client } from "@/lib/client";
 
-const Comments = () => {
+export default function Comments() {
   const { data: comments, isLoading } = useQuery({
     queryKey: ["get-comments"],
     queryFn: async () => {
@@ -55,6 +55,4 @@ const Comments = () => {
       </div>
     </div>
   );
-};
-
-export default Comments;
+}

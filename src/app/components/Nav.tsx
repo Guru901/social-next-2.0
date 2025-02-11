@@ -18,7 +18,7 @@ import {
   Bell,
 } from "lucide-react";
 
-const Nav = () => {
+export default function Nav() {
   const [showNav, setShowNav] = useState(false);
   const [showDropDown, setShowDropDown] = useState(false);
   const { error, user } = useGetUser();
@@ -318,6 +318,4 @@ const Nav = () => {
       <div className="h-16" />
     </>
   );
-};
-
-export default Nav;
+}

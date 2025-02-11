@@ -7,7 +7,7 @@ import Comments from "./comments/page";
 import Nav from "@/app/components/Nav";
 import Navbar from "./navbar/navbar";
 
-const Dashboard = () => {
+export default function Dashboard() {
   const [selectedOption, setSelectedOption] = useState("posts");
 
   const showItems = [
@@ -57,6 +57,4 @@ const Dashboard = () => {
       </div>
     </div>
   );
-};
-
-export default Dashboard;
+}

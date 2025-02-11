@@ -9,7 +9,7 @@ import PostCard from "@/app/components/PostCard";
 import { FetchOptions } from "./options";
 import { client } from "@/lib/client";
 
-const Feed = () => {
+export default function Feed() {
   const [selectedOption, setSelectedOption] = useState("general");
 
   const params = useSearchParams();
@@ -92,6 +92,4 @@ const Feed = () => {
       </div>
     </>
   );
-};
-
-export default Feed;
+}

@@ -1,7 +1,5 @@
 import React from "react";
 
-const Featrue = () => {
+export default function Featrue() {
   return <div>Featrue</div>;
-};
-
-export default Featrue;
+}

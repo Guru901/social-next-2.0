@@ -1,6 +1,6 @@
 export function getDateDifference(dateString: string) {
   if (!dateString) {
-    return;
+    return "Long time ago";
   }
   const postDate = new Date(dateString);
   const currentDate = new Date();

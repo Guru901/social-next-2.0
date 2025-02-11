@@ -52,7 +52,7 @@ export default function Post() {
     resolver: zodResolver(CommentSchema),
     defaultValues: {
       avatar: String(user?.avatar),
-      username: user.username,
+      username: usadder?.username,
       comment: "",
       image: "",
       postId: postId,

@@ -1,6 +1,6 @@
 import { z } from "zod";
 import auth from "../helper/auth";
-import { j, publicProcedure } from "../jstack";
+import { j, privateProcedure, publicProcedure } from "../jstack";
 import Post from "../models/postModel";
 import Comment from "../models/commentModel";
 import User from "../models/userModel";
@@ -8,19 +8,11 @@ import { connectToDb } from "../db/connect";
 import { CommentSchema, PostSchema } from "@/lib/schemas";
 
 export const postRouter = j.router({
-  getUserLikedPosts: publicProcedure.query(async ({ c }) => {
+  getUserLikedPosts: privateProcedure.query(async ({ c, ctx }) => {
     await connectToDb();
-    const { success, user, msg } = auth(c);
-    if (!success) {
-      return c.json({
-        success: false,
-        msg,
-        posts: [],
-      });
-    }
 
     const post = await Post.find({
-      likes: { $in: [user] },
+      likes: { $in: [ctx.auth] },
       isPublic: true,
     });
 
@@ -31,7 +23,7 @@ export const postRouter = j.router({
     });
   }),
 
-  getAllPosts: publicProcedure
+  getAllPosts: privateProcedure
     .input(
       z.object({
         keyWord: z.string().default("general"),
@@ -39,14 +31,6 @@ export const postRouter = j.router({
     )
     .query(async ({ c, input }) => {
       await connectToDb();
-      const { success } = auth(c);
-      if (!success) {
-        return c.json({
-          success: false,
-          msg: "User not logged in",
-          posts: [],
-        });
-      }
 
       const { keyWord } = input;
 
@@ -62,17 +46,9 @@ export const postRouter = j.router({
       });
     }),
 
-  getFriendsPost: publicProcedure.query(async ({ c }) => {
+  getFriendsPost: privateProcedure.query(async ({ c, ctx }) => {
     await connectToDb();
-    const { success, user, msg } = auth(c);
-    if (!success) {
-      return c.json({
-        success: false,
-        msg,
-        posts: [],
-      });
-    }
-    const loggedInUser = await User.findById(user);
+    const loggedInUser = await User.findById(ctx.auth);
 
     const friends = loggedInUser.friends;
 
@@ -112,25 +88,17 @@ export const postRouter = j.router({
     });
   }),
 
-  like: publicProcedure
+  like: privateProcedure
     .input(z.object({ id: z.string() }))
-    .mutation(async ({ c, input }) => {
+    .mutation(async ({ c, input, ctx }) => {
       await connectToDb();
-      const { success, user, msg } = auth(c);
-      if (!success) {
-        return c.json({
-          success: false,
-          msg,
-          posts: [],
-        });
-      }
 
       const { id } = input;
 
       const post = await Post.findByIdAndUpdate(
         id,
         {
-          $addToSet: { likes: user },
+          $addToSet: { likes: ctx.auth },
         },
         { new: true }
       );
@@ -142,25 +110,17 @@ export const postRouter = j.router({
       });
     }),
 
-  unlike: publicProcedure
+  unlike: privateProcedure
     .input(z.object({ id: z.string() }))
-    .mutation(async ({ c, input }) => {
+    .mutation(async ({ c, input, ctx }) => {
       await connectToDb();
-      const { success, user, msg } = auth(c);
-      if (!success) {
-        return c.json({
-          success: false,
-          msg,
-          posts: [],
-        });
-      }
 
       const { id } = input;
 
       const post = await Post.findByIdAndUpdate(
         id,
         {
-          $pull: { likes: user },
+          $pull: { likes: ctx.auth },
         },
         { new: true }
       );
@@ -172,25 +132,17 @@ export const postRouter = j.router({
       });
     }),
 
-  dislike: publicProcedure
+  dislike: privateProcedure
     .input(z.object({ id: z.string() }))
-    .mutation(async ({ c, input }) => {
+    .mutation(async ({ c, input, ctx }) => {
       await connectToDb();
-      const { success, user, msg } = auth(c);
-      if (!success) {
-        return c.json({
-          success: false,
-          msg,
-          posts: [],
-        });
-      }
 
       const { id } = input;
 
       const post = await Post.findByIdAndUpdate(
         id,
         {
-          $addToSet: { dislikes: user },
+          $addToSet: { dislikes: ctx.auth },
         },
         { new: true }
       );
@@ -202,25 +154,17 @@ export const postRouter = j.router({
       });
     }),
 
-  disunlike: publicProcedure
+  disunlike: privateProcedure
     .input(z.object({ id: z.string() }))
-    .mutation(async ({ c, input }) => {
+    .mutation(async ({ c, input, ctx }) => {
       await connectToDb();
-      const { success, user, msg } = auth(c);
-      if (!success) {
-        return c.json({
-          success: false,
-          msg,
-          posts: [],
-        });
-      }
 
       const { id } = input;
 
       const post = await Post.findByIdAndUpdate(
         id,
         {
-          $pull: { dislikes: user },
+          $pull: { dislikes: ctx.auth },
         },
         { new: true }
       );
@@ -232,37 +176,30 @@ export const postRouter = j.router({
       });
     }),
 
-  upload: publicProcedure.input(PostSchema).mutation(async ({ c, input }) => {
-    await connectToDb();
+  upload: privateProcedure
+    .input(PostSchema)
+    .mutation(async ({ c, ctx, input }) => {
+      await connectToDb();
 
-    const { success, user, msg } = auth(c);
-    if (!success) {
-      return c.json({
-        success: false,
-        msg,
-        posts: [],
+      const { title, body, image, isPublic, username, topic } = input;
+
+      const newPost = await Post.create({
+        title: title,
+        body: body,
+        image: image,
+        user: ctx.auth,
+        username: username,
+        isPublic: isPublic,
+        topic: topic,
       });
-    }
+      await newPost.save();
 
-    const { title, body, image, isPublic, username, topic } = input;
-
-    const newPost = await Post.create({
-      title: title,
-      body: body,
-      image: image,
-      user: user,
-      username: username,
-      isPublic: isPublic,
-      topic: topic,
-    });
-    await newPost.save();
-
-    return c.json({
-      success: true,
-      msg: "Post uploaded",
-      post: newPost,
-    });
-  }),
+      return c.json({
+        success: true,
+        msg: "Post uploaded",
+        post: newPost,
+      });
+    }),
 
   getTopicPost: publicProcedure
     .input(z.object({ topicName: z.string() }))
@@ -311,7 +248,7 @@ export const postRouter = j.router({
       });
     }),
 
-  comment: publicProcedure
+  comment: privateProcedure
     .input(CommentSchema)
     .mutation(async ({ input, c }) => {
       const { comment, postId, username, image, replyTo, avatar } = input;
@@ -340,24 +277,16 @@ export const postRouter = j.router({
       });
     }),
 
-  delete: publicProcedure
+  delete: privateProcedure
     .input(z.object({ postId: z.string() }))
-    .mutation(async ({ input, c }) => {
+    .mutation(async ({ input, c, ctx }) => {
       await connectToDb();
-      const { success, msg, user } = auth(c);
-
-      if (!success) {
-        return c.json({
-          success: false,
-          msg,
-        });
-      }
 
       const { postId } = input;
 
       await Post.findOneAndDelete({
         _id: postId,
-        user: user,
+        user: ctx.auth,
       });
 
       return c.json({

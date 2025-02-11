@@ -1,9 +1,9 @@
-import { j, publicProcedure } from "../jstack";
+import { j, privateProcedure, publicProcedure } from "../jstack";
 import { AddFriendSchema, LoginSchema, SignUpSchema } from "@/lib/schemas";
 import User from "../models/userModel";
 import { connectToDb } from "../db/connect";
 import jwt from "jsonwebtoken";
-import { setCookie, getCookie } from "hono/cookie";
+import { setCookie } from "hono/cookie";
 import { z } from "zod";
 import auth from "../helper/auth";
 import Post from "../models/postModel";
@@ -100,11 +100,9 @@ export const userRouter = j.router({
     });
   }),
 
-  me: publicProcedure.query(async ({ c }) => {
+  me: privateProcedure.query(async ({ c, ctx }) => {
     await connectToDb();
-    const token = getCookie(c, "token");
-    const { id } = jwt.decode(token) as { id: string };
-    const user = await User.findById(id).select("-password");
+    const user = await User.findById(ctx.auth).select("-password");
 
     if (!user) {
       return c.json({
@@ -121,23 +119,16 @@ export const userRouter = j.router({
     });
   }),
 
-  getLoggedInUserPosts: publicProcedure
+  getLoggedInUserPosts: privateProcedure
     .input(z.object({ isPublic: z.boolean().default(true) }))
-    .mutation(async ({ c, input }) => {
+    .mutation(async ({ c, input, ctx }) => {
       await connectToDb();
       const { isPublic } = input;
-      const { success, user, msg } = auth(c);
-      if (!success) {
-        return c.json({
-          success: false,
-          msg,
-          posts: [],
-        });
-      }
 
-      const posts = await Post.find({ user: user, isPublic: isPublic }).select(
-        "image"
-      );
+      const posts = await Post.find({
+        user: ctx.auth,
+        isPublic: isPublic,
+      }).select("image");
 
       return c.json({
         success: true,
@@ -227,23 +218,14 @@ export const userRouter = j.router({
       });
     }),
 
-  checkFriend: publicProcedure
+  checkFriend: privateProcedure
     .input(z.object({ id: z.string() }))
-    .query(async ({ input, c }) => {
-      const { user: userId, success, msg } = auth(c);
-
+    .query(async ({ input, c, ctx }) => {
       const { id } = input;
-
-      if (!success) {
-        return c.json({
-          success,
-          msg,
-        });
-      }
 
       const user = await User.findById(id);
 
-      if (user.friends.includes(userId)) {
+      if (user.friends.includes(ctx.auth)) {
         return c.json({
           success: true,
         });
@@ -257,6 +239,7 @@ export const userRouter = j.router({
   getUserById: publicProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input, c }) => {
+      await connectToDb();
       const user = await User.findById(input.id);
 
       return c.json({
@@ -273,18 +256,10 @@ export const userRouter = j.router({
     });
   }),
 
-  getFriends: publicProcedure.query(async ({ c }) => {
+  getFriends: privateProcedure.query(async ({ c, ctx }) => {
     await connectToDb();
-    const { user, success, msg } = auth(c);
-    if (!success) {
-      return c.json({
-        success,
-        msg,
-        friendsData: [],
-      });
-    }
 
-    const loggedInUser = await User.findById(user);
+    const loggedInUser = await User.findById(ctx.auth);
     const friends = loggedInUser.friends;
 
     const friendsData = await Promise.all(
@@ -301,18 +276,11 @@ export const userRouter = j.router({
     });
   }),
 
-  getNotifications: publicProcedure.query(async ({ c }) => {
+  getNotifications: privateProcedure.query(async ({ c, ctx }) => {
     await connectToDb();
-    const { user, success, msg } = auth(c);
-    if (!success) {
-      return c.json({
-        success,
-        msg,
-        notifications: [],
-      });
-    }
+
     const notifications = await Notifications.find({
-      to: user,
+      to: ctx.auth,
       isAccepted: false,
     });
 
@@ -323,7 +291,7 @@ export const userRouter = j.router({
     });
   }),
 
-  acceptNotification: publicProcedure
+  acceptNotification: privateProcedure
     .input(
       z.object({
         notificationType: z.string(),
@@ -331,20 +299,13 @@ export const userRouter = j.router({
         notificationId: z.string(),
       })
     )
-    .mutation(async ({ input, c }) => {
+    .mutation(async ({ input, c, ctx }) => {
       await connectToDb();
-      const { user, success, msg } = auth(c);
-      if (!success) {
-        return c.json({
-          success,
-          msg,
-        });
-      }
       const { notificationType, from, notificationId } = input;
 
       if (notificationType === "friendAdd") {
         const fromUser = await User.findOne({ username: from });
-        const toUser = await User.findById(user);
+        const toUser = await User.findById(ctx.auth);
 
         if (!fromUser || !toUser) {
           return c.json({ msg: "User not found" });
@@ -372,23 +333,16 @@ export const userRouter = j.router({
       }
     }),
 
-  editAvatar: publicProcedure
+  editAvatar: privateProcedure
     .input(z.object({ avatar: z.string() }))
-    .mutation(async ({ input, c }) => {
+    .mutation(async ({ input, c, ctx }) => {
       await connectToDb();
-      const { success, user, msg } = auth(c);
-      if (!success) {
-        return c.json({
-          success: false,
-          msg,
-        });
-      }
 
       const { avatar } = input;
 
-      const userToUpdate = await User.findById(user);
+      const userToUpdate = await User.findById(ctx.auth);
 
-      if (userToUpdate._id !== user) {
+      if (userToUpdate._id !== ctx.auth) {
         return c.json({
           success: false,
           msg: "Unauthorized",
@@ -405,24 +359,17 @@ export const userRouter = j.router({
       });
     }),
 
-  changePassword: publicProcedure
+  changePassword: privateProcedure
     .input(
       z.object({
         oldPass: z.string(),
         newPass: z.string(),
       })
     )
-    .mutation(async ({ input, c }) => {
+    .mutation(async ({ input, c, ctx }) => {
       await connectToDb();
-      const { success, user, msg } = auth(c);
-      if (!success) {
-        return c.json({
-          success: false,
-          msg,
-        });
-      }
 
-      const loggedInUser = await User.findById(user);
+      const loggedInUser = await User.findById(ctx.auth);
       const { oldPass, newPass } = input;
 
       if (oldPass !== loggedInUser.password) {

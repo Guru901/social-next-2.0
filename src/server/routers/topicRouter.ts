@@ -1,6 +1,6 @@
 import { connectToDb } from "../db/connect";
 import auth from "../helper/auth";
-import { j, publicProcedure } from "../jstack";
+import { j, privateProcedure, publicProcedure } from "../jstack";
 import Topic from "../models/topicModel";
 import { z } from "zod";
 import User from "../models/userModel";
@@ -15,7 +15,7 @@ export const topicRouter = j.router({
       topics,
     });
   }),
-  createTopic: publicProcedure
+  createTopic: privateProcedure
     .input(z.object({ name: z.string() }))
     .mutation(async ({ c, input }) => {
       await connectToDb();

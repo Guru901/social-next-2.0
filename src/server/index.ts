@@ -1,6 +1,8 @@
+import auth from "./helper/auth";
 import { j } from "./jstack";
 import { postRouter } from "./routers/postRouter";
 import { topicRouter } from "./routers/topicRouter";
+import { HTTPException } from "hono/http-exception";
 import { userRouter } from "./routers/userRouter";
 
 const api = j

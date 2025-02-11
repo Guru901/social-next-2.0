@@ -1,3 +1,5 @@
+"use server";
+
 import { client } from "@/lib/client";
 import { redirect } from "next/navigation";
 

@@ -124,7 +124,7 @@ export default function User() {
         <div className="flex gap-8 items-center px-8"></div>
         <UserDetails
           user={userData}
-          posts={posts}
+          postCount={posts.length}
           isProfile={false}
           isFriend={isFriend}
           friendBtn={friendBtn}

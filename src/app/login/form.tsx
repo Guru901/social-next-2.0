@@ -39,7 +39,7 @@ export default function LoginForm() {
 
   return (
     <form className="flex flex-col w-full max-w-sm gap-3" onSubmit={onSubmit}>
-      <div>
+      <div className="flex flex-col gap-1">
         <input
           type="text"
           placeholder="Enter Your Username.."
@@ -51,7 +51,7 @@ export default function LoginForm() {
         )}
       </div>
 
-      <div>
+      <div className="flex flex-col gap-1">
         <input
           type="password"
           placeholder="Enter Your Password.."
@@ -60,6 +60,9 @@ export default function LoginForm() {
         />
         {errors.password && (
           <p className="text-xs text-red-500">{errors.password.message}</p>
+        )}
+        {errors.root && (
+          <p className="text-xs text-red-500">{errors.root.message}</p>
         )}
       </div>
       <div className="flex flex-col text-xs gap-1">

@@ -13,8 +13,8 @@ export const SignUpSchema = z
   });
 
 export const LoginSchema = z.object({
-  username: z.string(),
-  password: z.string(),
+  username: z.string().min(1, "Username can't be empty"),
+  password: z.string().min(1, "Password can't be empty"),
 });
 
 export const PostSchema = z.object({

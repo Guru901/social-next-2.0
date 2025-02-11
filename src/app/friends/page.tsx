@@ -1,10 +1,20 @@
+"use client";
+
 import Nav from "@/app/components/Nav";
 import { client } from "@/lib/client";
 import Link from "next/link";
 import Image from "next/image";
+import { useQuery } from "@tanstack/react-query";
 
-export default async function FriendsPage() {
-  const { friendsData } = await (await client.user.getFriends.$get()).json();
+export default function FriendsPage() {
+  const { data: friendsData } = useQuery({
+    queryKey: ["friends"],
+    queryFn: async () => {
+      const res = await client.user.getFriends.$get();
+      const { friendsData } = await res.json();
+      return friendsData;
+    },
+  });
 
   return (
     <div>

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import auth from "../helper/auth";
+import auth from "../lib/auth";
 import { j, privateProcedure, publicProcedure } from "../jstack";
 import Post from "../models/postModel";
 import Comment from "../models/commentModel";

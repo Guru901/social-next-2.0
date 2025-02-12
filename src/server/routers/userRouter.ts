@@ -5,7 +5,7 @@ import { connectToDb } from "../db/connect";
 import jwt from "jsonwebtoken";
 import { setCookie } from "hono/cookie";
 import { z } from "zod";
-import auth from "../helper/auth";
+import auth from "../lib/auth";
 import Post from "../models/postModel";
 import Notifications from "../models/notificationModel";
 

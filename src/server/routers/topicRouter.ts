@@ -1,5 +1,5 @@
 import { connectToDb } from "../db/connect";
-import auth from "../helper/auth";
+import auth from "../lib/auth";
 import { j, privateProcedure, publicProcedure } from "../jstack";
 import Topic from "../models/topicModel";
 import { z } from "zod";

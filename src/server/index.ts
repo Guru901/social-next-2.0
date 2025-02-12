@@ -1,4 +1,4 @@
-import auth from "./helper/auth";
+import auth from "./lib/auth";
 import { j } from "./jstack";
 import { postRouter } from "./routers/postRouter";
 import { topicRouter } from "./routers/topicRouter";

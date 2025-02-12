@@ -1,5 +1,5 @@
 import { jstack } from "jstack";
-import auth from "./helper/auth";
+import auth from "./lib/auth";
 import { HTTPException } from "hono/http-exception";
 
 interface Env {

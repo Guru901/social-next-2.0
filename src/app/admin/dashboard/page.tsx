@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Sidebar from "./sidebar/sidebar";
-import Posts from "../posts/page";
+import Posts from "./posts/page";
 import Comments from "./comments/page";
 import Nav from "@/app/components/Nav";
 import Navbar from "./navbar/navbar";

@@ -1,15 +1,17 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 
+type User = {
+  _id: string;
+  username: string;
+  avatar: string;
+  friends: string[];
+  isFriendsWith: string[];
+};
+
 type UserStoreActions = {
-  user: {
-    _id: string;
-    username: string;
-    avatar: string;
-    friends: string[];
-    isFriendsWith: string[];
-  } | null;
-  setUser: (user: any) => void;
+  user: User | null;
+  setUser: (user: User) => void;
 };
 
 export const useUserStore = create<UserStoreActions>()(

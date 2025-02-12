@@ -43,7 +43,7 @@ export default function PostCard({
     likes: string[];
     dislikes: string[];
   };
-  refetch: any;
+  refetch: () => void;
 }) {
   const { user } = useGetUser();
 

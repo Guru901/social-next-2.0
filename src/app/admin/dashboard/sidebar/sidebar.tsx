@@ -46,7 +46,7 @@ export default function Sidebar() {
 
   const logOut = async () => {
     await client.user.logout.$get();
-    setUser({});
+    setUser(null);
     router.push("/login");
   };
 

@@ -1,4 +1,10 @@
 import { client } from "@/lib/client";
+import {
+  handleDisLike,
+  handleDisUnlike,
+  handleLike,
+  handleUnLike,
+} from "@/lib/likeUtils";
 import { useUserStore } from "@/stores/userStore";
 import { ThumbsDown, ThumbsUp } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -32,11 +38,9 @@ export function Options({ post, setPost, refetch }) {
     }
   };
 
-  const handleLike = async (id: string) => {
+  const like = async (id: string) => {
     try {
-      await client.post.like.$post({
-        id: id,
-      });
+      await handleLike(id, () => {});
       setPost((prevPost: typeof post) => ({
         ...prevPost,
         likes: [...(prevPost?.likes || []), user?._id],
@@ -46,11 +50,9 @@ export function Options({ post, setPost, refetch }) {
     }
   };
 
-  const handleUnLike = async (id: string) => {
+  const unLike = async (id: string) => {
     try {
-      await client.post.unlike.$post({
-        id: id,
-      });
+      handleUnLike(id, () => {});
       setPost((prevPost: typeof post) => ({
         ...prevPost,
         likes: prevPost?.likes?.filter((like) => like !== user?._id),
@@ -60,11 +62,9 @@ export function Options({ post, setPost, refetch }) {
     }
   };
 
-  const handleDisLike = async (id: string) => {
+  const disLike = async (id: string) => {
     try {
-      await client.post.dislike.$post({
-        id: id,
-      });
+      handleDisLike(id, () => {});
       setPost((prevPost: typeof post) => ({
         ...prevPost,
         dislikes: [...(prevPost?.dislikes || []), user?._id],
@@ -74,11 +74,9 @@ export function Options({ post, setPost, refetch }) {
     }
   };
 
-  const handleDisUnlike = async (id: string) => {
+  const disUnLike = async (id: string) => {
     try {
-      await client.post.disunlike.$post({
-        id: id,
-      });
+      handleDisUnlike(id, () => {});
       setPost((prevPost: typeof post) => ({
         ...prevPost,
         dislikes: prevPost?.dislikes?.filter(
@@ -109,7 +107,7 @@ export function Options({ post, setPost, refetch }) {
           <div className="flex items-center justify-center gap-1">
             <ThumbsUp
               size={28}
-              onClick={() => handleUnLike(post._id)}
+              onClick={() => unLike(post._id)}
               className="cursor-pointer fill-current"
             />
             <h1 className="text-xl">{post?.likes?.length}</h1>
@@ -118,7 +116,7 @@ export function Options({ post, setPost, refetch }) {
           <div className="flex items-center justify-center gap-1">
             <ThumbsUp
               size={28}
-              onClick={() => handleLike(post._id)}
+              onClick={() => like(post._id)}
               className="cursor-pointer"
             />
             <h1 className="text-xl">{post?.likes?.length}</h1>
@@ -130,7 +128,7 @@ export function Options({ post, setPost, refetch }) {
           <div className="flex items-center justify-center gap-2">
             <ThumbsDown
               size={28}
-              onClick={() => handleDisUnlike(post._id)}
+              onClick={() => disUnLike(post._id)}
               className="cursor-pointer fill-current"
             />
             <h1 className="text-xl">{post?.dislikes?.length}</h1>
@@ -139,7 +137,7 @@ export function Options({ post, setPost, refetch }) {
           <div className="flex items-center justify-center gap-2">
             <ThumbsDown
               size={28}
-              onClick={() => handleDisLike(post._id)}
+              onClick={() => disLike(post._id)}
               className="cursor-pointer"
             />
             <h1 className="text-xl">{post?.dislikes?.length}</h1>

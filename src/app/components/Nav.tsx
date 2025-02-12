@@ -17,6 +17,7 @@ import {
   Folder,
   Bell,
 } from "lucide-react";
+import { client } from "@/lib/client";
 
 export default function Nav() {
   const [showNav, setShowNav] = useState(false);
@@ -120,7 +121,7 @@ export default function Nav() {
       friends: [],
       isFriendsWith: [],
     });
-    // await axios.get(d"/api/user/logout");
+    await client.user.logout.$get();
     router.push("/login");
   };
 

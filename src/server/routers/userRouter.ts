@@ -240,7 +240,24 @@ export const userRouter = j.router({
     .input(z.object({ id: z.string() }))
     .query(async ({ input, c }) => {
       await connectToDb();
-      const user = await User.findById(input.id);
+
+      const id = input.id.split("_").join(" ");
+
+      let user = await User.findOne({
+        username: { $regex: new RegExp("^" + id + "$", "i") },
+      });
+
+      if (!user) {
+        user = await User.findById(id).select("-password");
+      }
+
+      if (!user) {
+        return c.json({
+          msg: "User not found",
+          success: false,
+          user: {},
+        });
+      }
 
       return c.json({
         success: true,

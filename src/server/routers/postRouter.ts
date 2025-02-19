@@ -371,4 +371,17 @@ export const postRouter = j.router({
       posts,
     });
   }),
+
+  handleDeleteComment: privateProcedure
+    .input(z.object({ commentId: z.string() }))
+    .query(async ({ c, ctx, input }) => {
+      await connectToDb();
+
+      const comment = await Comment.findByIdAndDelete(input.commentId);
+
+      return c.json({
+        success: true,
+        msg: "connect deleted",
+      });
+    }),
 });

@@ -43,16 +43,11 @@ export default function Post() {
   const postIDArray = pathname.split("/p/");
   const postId = postIDArray.length > 1 ? postIDArray[1] : null;
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-    setValue,
-  } = useForm<Comment>({
+  const { register, handleSubmit, formState, setValue } = useForm<Comment>({
     resolver: zodResolver(CommentSchema),
     defaultValues: {
       avatar: String(user?.avatar),
-      username: user?.username,
+      username: String(user?.username),
       comment: "",
       image: "",
       postId: postId,
@@ -94,15 +89,27 @@ export default function Post() {
 
   const onSubmit = handleSubmit(async (data) => {
     setValue("replyTo", replyTo);
-    mutation.mutate(data);
+    setValue("avatar", user.avatar);
+    setValue("username", user.username);
+
+    mutation.mutate({
+      avatar: user.avatar,
+      username: user.username,
+      replyTo: replyTo,
+      comment: data.comment,
+      image: data.image,
+      postId: data.postId,
+    });
     refetch();
   });
 
   async function handleDelete(id: string) {
+    console.log(id);
     try {
-      await client.post.delete.$post({
-        postId: id,
+      await client.post.handleDeleteComment.$get({
+        commentId: id,
       });
+
       refetch();
     } catch (error) {
       console.error("Error deleting comment:", error);
@@ -230,7 +237,7 @@ export default function Post() {
                     uploadPreset="social-nextest"
                     onSuccess={(results) => {
                       // @ts-ignore
-                      setValue("avatar", results.info.securl_url);
+                      setValue("image", results.info.securl_url);
                     }}
                   >
                     {({ open }) => {
@@ -242,8 +249,12 @@ export default function Post() {
                     }}
                   </CldUploadWidget>
                 </label>
-                <button className="btn" type="submit" disabled={isSubmitting}>
-                  {isSubmitting ? (
+                <button
+                  className="btn"
+                  type="submit"
+                  disabled={mutation.isPending}
+                >
+                  {mutation.isPending ? (
                     <>
                       <Loader2 className="animate-spin" />
                       Please wait

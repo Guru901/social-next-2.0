@@ -173,7 +173,15 @@ export function Options({ post, setPost, refetch }) {
                     Yes
                   </button>
                   <form method="dialog">
-                    <button className="btn">No</button>
+                    <button
+                      className="btn"
+                      onClick={() =>
+                        // @ts-ignore
+                        (document.getElementById("my_modal_6")!.checked = false)
+                      }
+                    >
+                      No
+                    </button>
                   </form>
                 </div>
               </div>

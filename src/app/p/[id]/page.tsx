@@ -36,7 +36,7 @@ export default function Post() {
   });
 
   const [replyTo, setReplyTo] = useState("");
-  const inpRef = useRef(null);
+  const inpRef = useRef<HTMLInputElement>(null);
   const pathname = usePathname();
   const { user } = useUserStore();
 

@@ -81,7 +81,10 @@ export function Comment({
                   <li
                     onClick={() => {
                       setReplyTo(comment?._id);
-                      inpRef.current.focus();
+                      console.log(inpRef);
+                      if (inpRef.current) {
+                        inpRef.current.focus();
+                      }
                     }}
                   >
                     <a>Reply</a>

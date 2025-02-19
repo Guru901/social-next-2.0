@@ -12,7 +12,7 @@ import Link from "next/link";
 import { useState, startTransition } from "react";
 import { ThumbsUp, ThumbsDown } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { Share2 } from "lucide-react";
+import { Share2, User } from "lucide-react";
 import useGetUser from "@/hooks/useGetUser";
 
 function CopyToast() {
@@ -28,6 +28,7 @@ function CopyToast() {
 export default function PostCard({
   post,
   refetch,
+  ref,
 }: {
   post: {
     _id: string;
@@ -44,6 +45,7 @@ export default function PostCard({
     dislikes: string[];
   };
   refetch: () => void;
+  ref?: any;
 }) {
   const { user } = useGetUser();
 
@@ -141,20 +143,27 @@ export default function PostCard({
   }
 
   return (
-    <div className="card bg-base-100 shadow-xl w-full singlePost border border-gray-50/10">
+    <div
+      className="card bg-base-100 shadow-xl w-full singlePost border border-gray-50/10"
+      ref={ref}
+    >
       <>
         <figure className="flex flex-col gap-2">
           <div className="flex gap-2 items-center w-full p-2">
             <div className="avatar">
-              <Image
-                src={post?.user?.avatar || "/avatar.png"}
-                alt={post?.user?.username || "avatar"}
-                priority={true}
-                loading="eager"
-                width={60}
-                height={60}
-                className="rounded-full max-w-16 min-h-16 object-cover"
-              />
+              {post?.user?.avatar ? (
+                <Image
+                  src={post?.user?.avatar || "/avatar.png"}
+                  alt={post?.user?.username || "avatar"}
+                  priority={true}
+                  loading="eager"
+                  width={60}
+                  height={60}
+                  className="rounded-full max-w-16 min-h-16 object-cover"
+                />
+              ) : (
+                <User className="rounded-full max-w-[60px] min-h-[60px] object-cover" />
+              )}
             </div>
             <div className="flex flex-col">
               <Link href={`/u/${username}`} className="font-semibold underline">

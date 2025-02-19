@@ -27,17 +27,36 @@ export const postRouter = j.router({
     .input(
       z.object({
         keyWord: z.string().default("general"),
+        page: z.number(),
       })
     )
     .query(async ({ c, input }) => {
       await connectToDb();
 
-      const { keyWord } = input;
+      const { keyWord, page } = input;
+      const limit = 10;
+
+      if (page === -1) {
+        const posts = await Post.find({
+          isPublic: true,
+          topic: keyWord.toLowerCase() || "",
+        }).populate("user", "username avatar");
+
+        return c.json({
+          success: true,
+          msg: "Posts found",
+          posts,
+        });
+      }
 
       const posts = await Post.find({
         isPublic: true,
         topic: keyWord.toLowerCase() || "",
-      }).populate("user", "username avatar");
+      })
+        .populate("user", "username avatar")
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .sort({ createdAt: -1 });
 
       return c.json({
         success: true,
@@ -46,47 +65,83 @@ export const postRouter = j.router({
       });
     }),
 
-  getFriendsPost: privateProcedure.query(async ({ c, ctx }) => {
-    await connectToDb();
-    const loggedInUser = await User.findById(ctx.auth);
+  getFriendsPost: privateProcedure
+    .input(z.object({ page: z.number() }))
+    .query(async ({ c, ctx, input }) => {
+      await connectToDb();
+      const loggedInUser = await User.findById(ctx.auth);
 
-    const friends = loggedInUser.friends;
+      const friends = loggedInUser.friends;
+      const { page } = input;
+      const limit = 10;
 
-    const posts = [];
+      const posts = [];
+      const totalPosts = friends.length;
+      const startIndex = (page - 1) * limit;
+      let collectedPosts = 0;
 
-    for (let i = 0; i < friends.length; i++) {
-      const friend = friends[i];
+      for (let i = 0; i < friends.length; i++) {
+        const friend = friends[friends.length - 1 - i];
 
-      const post = await Post.find({ user: friend, topic: "general" }).populate(
-        "user",
-        "username avatar"
-      );
+        const friendPosts = await Post.find({
+          user: friend,
+          topic: "general",
+        })
+          .populate("user", "username avatar")
+          .sort({ createdAt: -1 });
 
-      for (let p = 0; p < post.length; p++) {
-        posts.push(post[p]);
+        for (let post of friendPosts) {
+          if (
+            collectedPosts >= startIndex &&
+            collectedPosts < startIndex + limit
+          ) {
+            posts.push(post);
+          }
+          collectedPosts++;
+        }
+
+        if (collectedPosts >= startIndex + limit) break;
       }
-    }
 
-    return c.json({
-      success: true,
-      msg: "Posts found",
-      posts,
-    });
-  }),
+      return c.json({
+        success: true,
+        msg: "Posts found",
+        posts,
+      });
+    }),
 
-  getPublicPosts: publicProcedure.query(async ({ c }) => {
-    await connectToDb();
-    const posts = await Post.find({ isPublic: true }).populate(
-      "user",
-      "username avatar"
-    );
+  getPublicPosts: publicProcedure
+    .input(z.object({ page: z.number() }))
+    .query(async ({ c, input }) => {
+      await connectToDb();
+      const { page } = input;
+      const limit = 10;
 
-    return c.json({
-      success: true,
-      msg: "Posts found",
-      posts,
-    });
-  }),
+      if (page === -1) {
+        const posts = await Post.find({ isPublic: true }).populate(
+          "user",
+          "username avatar"
+        );
+
+        return c.json({
+          success: true,
+          msg: "Posts found",
+          posts,
+        });
+      }
+
+      const posts = await Post.find({ isPublic: true })
+        .populate("user", "username avatar")
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .sort({ createdAt: -1 });
+
+      return c.json({
+        success: true,
+        msg: "Posts found",
+        posts,
+      });
+    }),
 
   like: privateProcedure
     .input(z.object({ id: z.string() }))

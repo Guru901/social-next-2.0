@@ -7,7 +7,7 @@ export const client = createClient<AppRouter>({
 
 function getBaseUrl() {
   if (process.env.NODE_ENV === "production") {
-    return "https://social-next-2-0.vercel.app";
+    return "https://social-next-noice.vercel.app";
   }
   return `http://localhost:3000`;
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import React, { useRef, useState } from "react";
+import React, { FormEvent, useEffect, useRef, useState } from "react";
 import Nav from "@/app/components/Nav";
 import Image from "next/image";
 import { getDateDifference } from "@/lib/getDateDifference";
@@ -15,10 +15,8 @@ import { Comment } from "@/app/components/Comment";
 import Link from "next/link";
 import Loader from "@/app/loading";
 import { client } from "@/lib/client";
-import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { CommentSchema } from "@/lib/schemas";
-import { zodResolver } from "@hookform/resolvers/zod";
 
 type Comment = z.infer<typeof CommentSchema>;
 
@@ -40,20 +38,14 @@ export default function Post() {
   const pathname = usePathname();
   const { user } = useUserStore();
 
+  const [commentData, setCommentData] = useState({
+    comment: "",
+    image: "",
+    postId: "",
+  });
+
   const postIDArray = pathname.split("/p/");
   const postId = postIDArray.length > 1 ? postIDArray[1] : null;
-
-  const { register, handleSubmit, formState, setValue } = useForm<Comment>({
-    resolver: zodResolver(CommentSchema),
-    defaultValues: {
-      avatar: String(user?.avatar),
-      username: String(user?.username),
-      comment: "",
-      image: "",
-      postId: postId,
-      replyTo: replyTo,
-    },
-  });
 
   const {
     isLoading: isPostLoading,
@@ -87,21 +79,23 @@ export default function Post() {
     },
   });
 
-  const onSubmit = handleSubmit(async (data) => {
-    setValue("replyTo", replyTo);
-    setValue("avatar", user.avatar);
-    setValue("username", user.username);
-
+  const onSubmit = async (e: FormEvent) => {
+    e.preventDefault();
     mutation.mutate({
       avatar: user.avatar,
       username: user.username,
       replyTo: replyTo,
-      comment: data.comment,
-      image: data.image,
-      postId: data.postId,
+      comment: commentData.comment,
+      image: commentData.image,
+      postId: commentData.postId,
+    });
+    setCommentData({
+      comment: "",
+      postId: postId,
+      image: "",
     });
     refetch();
-  });
+  };
 
   async function handleDelete(id: string) {
     console.log(id);
@@ -122,6 +116,13 @@ export default function Post() {
   if (post?.image) {
     post.image = post?.image.split("djna5slqw").join("daxbi6fhs");
   }
+
+  useEffect(() => {
+    setCommentData({
+      ...commentData,
+      postId: postId,
+    });
+  }, [postId]);
 
   return (
     <div className="w-full flex flex-col justify-center pl-1 items-center">
@@ -227,17 +228,27 @@ export default function Post() {
               <form className="flex gap-2" onSubmit={onSubmit}>
                 <label className="relative w-[69vw] max-w-xl input input-bordered flex items-center gap-2 justify-between">
                   <input
-                    type="text"
                     ref={inpRef}
-                    {...register("comment")}
+                    type="text"
+                    value={commentData.comment}
+                    name="comment"
+                    onChange={(e) =>
+                      setCommentData({
+                        ...commentData,
+                        comment: e.target.value,
+                      })
+                    }
                     className="w-[90%] bg-transparent"
                     placeholder="Enter Your Comment.."
                   />
                   <CldUploadWidget
                     uploadPreset="social-nextest"
                     onSuccess={(results) => {
-                      // @ts-ignore
-                      setValue("image", results.info.securl_url);
+                      setCommentData({
+                        ...commentData,
+                        // @ts-ignore
+                        image: results.info.securl_url,
+                      });
                     }}
                   >
                     {({ open }) => {

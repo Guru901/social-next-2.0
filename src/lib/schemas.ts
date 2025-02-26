@@ -18,8 +18,8 @@ export const LoginSchema = z.object({
 });
 
 export const PostSchema = z.object({
-  title: z.string().min(3),
-  body: z.string().min(3),
+  title: z.string().min(3, "Title must be at least 3 characters"),
+  body: z.string().min(3, "Body must be at least 3 characters"),
   image: z.string().optional(),
   isPublic: z.boolean().default(true),
   username: z.string().optional(),
@@ -27,17 +27,17 @@ export const PostSchema = z.object({
 });
 
 export const CommentSchema = z.object({
-  comment: z.string(),
-  postId: z.string(),
+  comment: z.string().min(1, "Comment must be at least 1 character"),
+  postId: z.string().min(1, "Post ID must be at least 1 character"),
   image: z.string().optional(),
-  username: z.string(),
+  username: z.string().min(1, "Username must be at least 1 character"),
   avatar: z.string().optional(),
   replyTo: z.string().optional(),
 });
 
 export const AddFriendSchema = z.object({
-  from: z.string(),
-  userId: z.string(),
+  from: z.string().min(1, "From must be at least 1 character"),
+  userId: z.string().min(1, "User ID must be at least 1 character"),
   fromAvatar: z.string().optional(),
   type: z.string(),
 });

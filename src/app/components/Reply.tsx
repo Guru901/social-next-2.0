@@ -56,18 +56,27 @@ export function Reply({ comment }: { comment: Comments }) {
             </div>
           </div>
           <div className="break-words mr-2 md:mr-0">
-            {comment?.text.split(" ").map((x) =>
-              x.startsWith("@") ? (
-                <Link
-                  className="text-primary underline"
-                  href={`/u/${x.slice(1)}`}
-                >
-                  <span>{x + " "}</span>
-                </Link>
+            <div className="break-words mr-2 md:mr-0 max-w-[70vw]">
+              {!comment.text.includes("@") ? (
+                <p>{comment.text}</p>
               ) : (
-                <span>{x + " "}</span>
-              )
-            )}
+                <p>
+                  {comment.text.split(" ").map((x: string, index: number) =>
+                    x.startsWith("@") ? (
+                      <Link
+                        key={index}
+                        className="text-primary underline"
+                        href={`/u/${x.slice(1)}`}
+                      >
+                        {x + " "}
+                      </Link>
+                    ) : (
+                      <span key={index}>{x + " "}</span>
+                    )
+                  )}
+                </p>
+              )}
+            </div>
           </div>
         </div>
       </div>

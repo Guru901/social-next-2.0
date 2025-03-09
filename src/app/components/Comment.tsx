@@ -98,17 +98,24 @@ export function Comment({
               </details>
             </div>
             <div className="break-words mr-2 md:mr-0 max-w-[70vw]">
-              {comment?.text.split(" ").map((x) =>
-                x.startsWith("@") ? (
-                  <Link
-                    className="text-primary underline"
-                    href={`/u/${x.slice(1)}`}
-                  >
-                    <span>{x + " "}</span>
-                  </Link>
-                ) : (
-                  <span>{x + " "}</span>
-                )
+              {!comment.text.includes("@") ? (
+                <p>{comment.text}</p>
+              ) : (
+                <p>
+                  {comment.text.split(" ").map((x: string, index: number) =>
+                    x.startsWith("@") ? (
+                      <Link
+                        key={index}
+                        className="text-primary underline"
+                        href={`/u/${x.slice(1)}`}
+                      >
+                        {x + " "}
+                      </Link>
+                    ) : (
+                      <span key={index}>{x + " "}</span>
+                    )
+                  )}
+                </p>
               )}
             </div>
           </div>

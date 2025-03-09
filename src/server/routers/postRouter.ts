@@ -28,7 +28,7 @@ export const postRouter = j.router({
       z.object({
         keyWord: z.string().default("general"),
         page: z.number(),
-      })
+      }),
     )
     .query(async ({ c, input }) => {
       await connectToDb();
@@ -120,7 +120,7 @@ export const postRouter = j.router({
       if (page === -1) {
         const posts = await Post.find({ isPublic: true }).populate(
           "user",
-          "username avatar"
+          "username avatar",
         );
 
         return c.json({
@@ -155,7 +155,7 @@ export const postRouter = j.router({
         {
           $addToSet: { likes: ctx.auth },
         },
-        { new: true }
+        { new: true },
       );
 
       return c.json({
@@ -177,7 +177,7 @@ export const postRouter = j.router({
         {
           $pull: { likes: ctx.auth },
         },
-        { new: true }
+        { new: true },
       );
 
       return c.json({
@@ -199,7 +199,7 @@ export const postRouter = j.router({
         {
           $addToSet: { dislikes: ctx.auth },
         },
-        { new: true }
+        { new: true },
       );
 
       return c.json({
@@ -221,7 +221,7 @@ export const postRouter = j.router({
         {
           $pull: { dislikes: ctx.auth },
         },
-        { new: true }
+        { new: true },
       );
 
       return c.json({

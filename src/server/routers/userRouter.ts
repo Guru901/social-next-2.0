@@ -144,7 +144,7 @@ export const userRouter = j.router({
       const { isPublic, id } = input;
 
       const posts = await Post.find({ user: id, isPublic: isPublic }).select(
-        "image"
+        "image",
       );
 
       return c.json({
@@ -285,7 +285,7 @@ export const userRouter = j.router({
         friends.map(async (x) => {
           const friend = await User.findById(x);
           return friend;
-        })
+        }),
       );
 
       return c.json({
@@ -318,7 +318,7 @@ export const userRouter = j.router({
         notificationType: z.string(),
         from: z.string(),
         notificationId: z.string(),
-      })
+      }),
     )
     .mutation(async ({ input, c, ctx }) => {
       await connectToDb();
@@ -385,7 +385,7 @@ export const userRouter = j.router({
       z.object({
         oldPass: z.string(),
         newPass: z.string(),
-      })
+      }),
     )
     .mutation(async ({ input, c, ctx }) => {
       await connectToDb();

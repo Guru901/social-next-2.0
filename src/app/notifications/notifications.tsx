@@ -7,7 +7,7 @@ export default function Notifications({ notifications }) {
   const acceptNotification = async (
     notificationType: string,
     from: string,
-    notificationId: string
+    notificationId: string,
   ) => {
     try {
       await client.user.acceptNotification.$post({
@@ -50,7 +50,7 @@ export default function Notifications({ notifications }) {
                       acceptNotification(
                         notification.notificationType,
                         notification.from,
-                        notification._id
+                        notification._id,
                       );
                     }}
                   >

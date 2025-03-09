@@ -129,7 +129,7 @@ export default function Posts() {
               </div>
             </div>
           </div>
-        )
+        ),
       )}
     </div>
   );

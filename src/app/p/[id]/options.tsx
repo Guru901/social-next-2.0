@@ -80,7 +80,7 @@ export function Options({ post, setPost, refetch }) {
       setPost((prevPost: typeof post) => ({
         ...prevPost,
         dislikes: prevPost?.dislikes?.filter(
-          (dislike) => dislike !== user?._id
+          (dislike) => dislike !== user?._id,
         ),
       }));
     } catch (error) {

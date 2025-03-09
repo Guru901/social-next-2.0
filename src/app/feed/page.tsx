@@ -79,7 +79,7 @@ export default function Feed() {
         }
       };
     },
-    [isLoading, posts.length, hasMore]
+    [isLoading, posts.length, hasMore],
   );
 
   if (isError) {
@@ -129,16 +129,34 @@ export default function Feed() {
             )}
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-4 py-6 px-2 md:p-14 pb-16 w-screen">
-            <div className="space-y-4">
-              {posts
-                ?.filter((_, index) => index % 2 === 0)
-                .map((post, index) => {
-                  return (
+          <>
+            <div className="grid grid-cols-2 gap-4 py-6 px-2 md:p-14 pb-16 w-screen">
+              <div className="space-y-4">
+                {posts
+                  ?.filter((_, index) => index % 2 === 0)
+                  .map((post, index) => {
+                    return (
+                      <PostCard
+                        ref={
+                          index === Math.floor(posts.length / 2) &&
+                          posts.length % 2 === 0
+                            ? lastPostRef
+                            : null
+                        }
+                        key={`${post._id}-${index}`}
+                        post={post}
+                        refetch={refetch}
+                      />
+                    );
+                  })}
+              </div>
+              <div className="space-y-4">
+                {posts
+                  ?.filter((_, index) => index % 2 !== 0)
+                  .map((post, index) => (
                     <PostCard
                       ref={
-                        index === Math.floor(posts.length / 2) &&
-                        posts.length % 2 === 0
+                        index === Math.floor((posts.length - 1) / 2)
                           ? lastPostRef
                           : null
                       }
@@ -146,32 +164,16 @@ export default function Feed() {
                       post={post}
                       refetch={refetch}
                     />
-                  );
-                })}
+                  ))}
+              </div>
             </div>
-            <div className="space-y-4">
-              {posts
-                ?.filter((_, index) => index % 2 !== 0)
-                .map((post, index) => (
-                  <PostCard
-                    ref={
-                      index === Math.floor((posts.length - 1) / 2)
-                        ? lastPostRef
-                        : null
-                    }
-                    key={`${post._id}-${index}`}
-                    post={post}
-                    refetch={refetch}
-                  />
-                ))}
-            </div>
-            {hasMore && (
+            {hasMore && page !== 1 && (
               <div className="flex justify-center items-center gap-2">
                 <Loader2 className="animate-spin" />
                 Loading more posts...
               </div>
             )}
-          </div>
+          </>
         )}
       </div>
     </>

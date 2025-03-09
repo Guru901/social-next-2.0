@@ -297,7 +297,7 @@ export default function Post() {
                       setReplyTo={setReplyTo}
                       key={comment._id}
                     />
-                  )
+                  ),
                 )}
               </div>
             </div>

@@ -52,14 +52,14 @@ export default function PostCard({
   const router = useRouter();
 
   const [optimisticLikes, setOptimisticLikes] = useState(
-    post?.likes?.length || 0
+    post?.likes?.length || 0,
   );
   const [optimisticDislikes, setOptimisticDislikes] = useState(
-    post?.dislikes?.length || 0
+    post?.dislikes?.length || 0,
   );
   const [hasLiked, setHasLiked] = useState(post?.likes?.includes(user?._id));
   const [hasDisliked, setHasDisliked] = useState(
-    post?.dislikes?.includes(user?._id)
+    post?.dislikes?.includes(user?._id),
   );
   const [isLoading, setIsLoading] = useState(false);
   const [showToast, setShowToast] = useState(false);
@@ -242,7 +242,7 @@ export default function PostCard({
                   onClick={async () => {
                     try {
                       await navigator.clipboard.writeText(
-                        window.location.origin + `/p/${post._id}`
+                        window.location.origin + `/p/${post._id}`,
                       );
                       setShowToast(true);
                       setTimeout(() => {

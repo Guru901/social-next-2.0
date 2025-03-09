@@ -32,7 +32,7 @@ const commentSchema = new mongoose.Schema(
       default: [],
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const Comment =

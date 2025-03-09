@@ -15,7 +15,7 @@ const topicSchema = new mongoose.Schema(
       type: String,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const Topic = mongoose.models.topics || mongoose.model("topics", topicSchema);
